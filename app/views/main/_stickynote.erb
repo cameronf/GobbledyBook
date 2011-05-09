@@ -1,0 +1,7 @@
+<%#this is the partial to show the sticky notes in a variety of places %>
+
+<% if recipe[:stickynote]%>
+	<img src="<%=image_path("site/stickynote.png") %>" title="Save to My Stuff" onClick="setStickyNote('<%=recipe[:id].to_s%>', false);">
+<% else %>
+	<img src="<%=image_path("site/stickynote_grey.png") %>" title="Save to My Stuff" onClick="setStickyNote('<%=recipe[:id].to_s%>', true);">
+<% end %>

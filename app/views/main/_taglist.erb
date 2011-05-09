@@ -1,0 +1,94 @@
+<%#this partial form for searching for recipes by tag%>
+
+<form name="findrecipes" action="findRecipes">
+<div class="find_form">
+		<input type="hidden" id="onlymine" name="onlymine" value ="<%=@onlymine %>">
+		<input type="hidden" id="othertags" name="othertags" value ="<%=@searchTags.join(";")%>">
+		<input type="hidden" id="findVegan" name="findVegan" value="<%=@findVegan%>">
+		<input type="hidden" id="findOvo" name="findOvo" value="<%=@findOvo%>">
+		<input type="hidden" id="findGF" name="findGF" value="<%=@findGF%>">
+		
+		<div id="tag_auto_complete">
+			<input type="text" id="gbtags" name="gbtags" value="" onFocus="this.select();">
+			<div id="tag_drop_down"></div>
+		</div>
+</div>
+<p>
+	<div id="search_tags">
+			<% if !@hidetags %>
+		
+				<% if @findVegan%>
+						<img src="<%=image_path("site/vegan.png") %>" title="Vegan and Vegetarian" onclick="setSD('findVegan');">
+				<% end %>
+			
+				<% if @findOvo%>
+						<img src="<%=image_path("site/ovo.png") %>" title="Lacto Ovo Vegetarian" onclick="setSD('findOvo');">
+				<% end %>
+				
+				<% if @findGF%>
+						<img src="<%=image_path("site/gf.png") %>" title="Gluten Free" onclick="setSD('findGF');">
+				<% end %>	
+				<%  @searchTags.each_with_index do |tg, i| %>
+					<span id="searchtag" class="hot_button" onClick="removeSearchTag('<%=tg%>')">
+						&nbsp;[x]&nbsp;<span class="tag_name"><%=tg %></span>&nbsp;
+					</span>
+				<%  end %>
+				
+			<% end %>
+		</div>
+<p>
+
+
+</form>
+
+<script type="text/javascript">
+
+
+tagsAC = setTagAutoComplete("gbtags", "tag_drop_down", "listTags");
+
+function setTagAutoComplete(tf, ddf, ds){
+	// Use a LocalDataSource 
+	 var gbtags = document.getElementById(tf);
+	  	var thisDS = new YAHOO.util.XHRDataSource(ds);
+		thisDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+	    // Define the schema of the delimited results
+	    thisDS.responseSchema = {
+	        recordDelim: "\n",
+	        fieldDelim: "\t"
+	    };
+	//alert('test');
+
+   // Instantiate the AutoComplete 
+   	var oAC = new YAHOO.widget.AutoComplete(tf, ddf, thisDS); 
+   	oAC.useShadow = true;
+	oAC.animVert = true;  
+	oAC.maxResultsDisplayed = 20;
+	oAC.minQueryLength = 2;
+   	oAC.typeAhead = false; 
+	oAC.queryMatchContains = true; 
+	oAC.forceSelection = true; 
+	oAC.useIFrame = true;
+	
+	
+	function fnCallback(e, args) {
+
+		//alert(e);
+		document.findrecipes.submit();	
+
+	 }
+	oAC.itemSelectEvent.subscribe(fnCallback);
+
+	return oAC;
+	}
+	
+	
+function removeSearchTag(thistag){
+	var othertags = document.getElementById("othertags");
+	
+	alltags = othertags.value;
+	othertags.value = alltags.replace(thistag, "");
+	
+	document.findrecipes.submit();
+}
+</script>
+

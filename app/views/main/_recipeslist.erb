@@ -1,0 +1,119 @@
+<%#this is the recipe list on the editcookbook page%>
+
+<% signedin =  user_signed_in? %>
+<hr>
+
+<div id="recipes">
+<% if @recipes.length  == 0 %>
+
+<div class="bold_message">This cookbook doesn't have any recipes cataloged yet. Why not <a href="javascript:addNewRecipe();">add some</a> now?</div>
+<% end %>
+
+<% @recipes.each do |recipe| %>
+
+<!-- make each line item hot, so clicking will render the form for that item -->
+
+	<div class="recipe_line" id="recipe_<%=recipe[:id]%>">
+		<div class="recipe_name">
+		<% if !recipe[:name].nil?%>	
+			<div class="align_left"><a href="recipeDetails?recid=<%=recipe[:id]%>"><%=recipe[:name]%></a> </div>
+		<% else %>
+			<div class="align_left"><a href="recipeDetails?recid=<%=recipe[:id]%>">untitled recipe</a> </div>
+		<% end %>	
+			<div class="recipe_listing_page">(p. <%=recipe[:page]%>)</div>
+			
+			<div  class="sd_icons">
+			<% if recipe[:isVegan]%>
+				<img src="<%=image_path("site/vegan.png") %>" title="Vegan and Vegetarian">
+			<% else %>
+				<% if recipe[:isOvo]%>
+					<img src="<%=image_path("site/ovo.png") %>" title="Lacto Ovo Vegetarian">
+				<% end %>
+			<% end %>
+			<% if recipe[:isGF]%>
+				<img src="<%=image_path("site/gf.png") %>" title = "Gluten Free">
+			<% end %>
+			</div>
+		
+			</div>
+		<% if signedin %>
+
+		<div class="recipe_rating">
+			<div id="rating<%=recipe[:id]%>" class="rating_container"></div> 
+		
+			<script>
+				var rc_<%=recipe[:id]%> = new Control.Rating('rating<%=recipe[:id]%>', {value: '<%=recipe[:rating]%>', rated: false, multiple: true}); 
+				
+				rc_<%=recipe[:id]%>.observe('afterChange',function(new_value){
+					do_remote_call('','updateRecipeRating?id=<%=recipe[:id]%>'+'&rating='+new_value, false );
+				});
+			</script>
+			<div id="recipe_stickynote<%=recipe[:id]%>" class="recipe_stickynote"><%= render :partial => "stickynote", :locals => { :recipe => recipe }%></div>
+		</div>
+		
+		<% end %>
+
+		<div id ="rtaglist<%=recipe[:id]%>" class="tag_wrapper">
+
+			<% if recipe[:timeTags].length > 0 %>
+			<span class="tag_type_name">Cook Time:</span> 
+			<span class="recipe_tags">
+				<%   recipe[:timeTags].each_with_index do |tg,i| %>
+				<span class="tag_name"><%=tg[:name] %><% if i+1 != recipe[:timeTags].length %>,<% end %></span>
+				<%  end %>
+			</span><br>
+			<% end %>
+			
+			<% if recipe[:ingTags].length > 0 %>
+			<span class="tag_type_name">Ingredients:</span> 
+			<span class="recipe_tags">
+				<%   recipe[:ingTags].each_with_index do |tg,i| %>
+					<span class="tag_name"><%=tg[:amount]%><a href="findRecipes?onlymine=0&othertags=&gbtags=<%=tg[:name]%>"  class="tag_name"><%=tg[:name] %></a><% if i+1 != recipe[:ingTags].length %>,<% end %></span>
+				<%  end %>
+			</span>	<br>
+			<% end %>
+
+
+				<% if recipe[:relatedRecipes].length > 0 %>
+				<span class="tag_type_name">Needed Recipes:</span> 
+				<span class="recipe_tags">
+					<%   recipe[:relatedRecipes].each_with_index do |rr,i| %>					
+					<span class="tag_name"><a href="recipeDetails?recid=<%=rr[:rrid]%>"  class="tag_name"><%=rr[:rrname] %></a><% if i+1 != recipe[:relatedRecipes].length %>,<% end %></span>
+					<%  end %>
+				</span><br>
+				<% end %>
+
+
+			<% if recipe[:originTags].length > 0 %>
+			<span class="tag_type_name">Cuisine Type:</span> 
+			<span class="recipe_tags">
+				<%   recipe[:originTags].each_with_index do |tg,i| %>
+				<span class="tag_name"><a href="findRecipes?onlymine=0&othertags=&gbtags=<%=tg[:name]%>"  class="tag_name"><%=tg[:name] %></a><% if i+1 != recipe[:originTags].length %>,<% end %></span>
+				<%  end %>
+			</span><br>
+			<% end %>
+	
+			<% if recipe[:courseTags].length > 0 %>
+			<span class="tag_type_name">Course, Dish or Other:</span> 
+			<span class="recipe_tags">
+				<%   recipe[:courseTags].each_with_index do |tg,i| %>					
+				<span class="tag_name"><a href="findRecipes?onlymine=0&othertags=&gbtags=<%=tg[:name]%>"  class="tag_name"><%=tg[:name] %></a><% if i+1 != recipe[:courseTags].length %>,<% end %></span>
+				<%  end %>
+			</span><br>
+			<% end %>
+		</div>
+</div>
+<% end %>
+</div>
+
+
+<script type="text/javascript">
+
+function addNewRecipe(){
+	document.location= "recipeDetailsForm?recid=&cookbook=<%=@cookbook.id%>";
+}
+	
+</script>
+
+
+

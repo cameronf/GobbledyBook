@@ -1,0 +1,109 @@
+<%#this is the partial that lets you select a cookbook by title on a variety of pages. Need to do: add search by author %>
+
+
+	<div class="find_form"  >
+		<form name="findcookbook" action="editCookbook">
+			<div id="cookbook_auto_complete">
+				By Title:  &nbsp;<br><input type="text" id="cookbook_title" name="cookbook_title" value="" onFocus="this.select();">
+				<div id="cookbook_drop_down"></div>
+			</div>
+			<input class="go_button" type="image" src="<%=image_path("site/go.png") %>" name="gofindcookbook">
+		</form>
+	</div>
+<div class="clear_float"></div>
+	<div class="find_form"  >
+		<form name="findauthor" action="byAuthorCookbooks">
+			<div id="author_auto_complete">
+				By Author: &nbsp;<br><input type="text" id="author_name" name="author_name" value="" onFocus="this.select();">
+				
+				<div id="author_drop_down"></div>
+			</div>
+			<input class="go_button" type="image" src="<%=image_path("site/go.png") %>" name="gofindauthor">
+		
+		</form>
+	</div>
+	<p>&nbsp;<br>
+	
+	<script type="text/javascript">
+	
+	
+	cookbookAC = setCookbookAutoComplete("cookbook_title", "cookbook_drop_down");
+	authorAC = setAuthorAutoComplete("author_name", "author_drop_down");
+
+		
+	function setCookbookAutoComplete(tf, ddf, ds){
+		// Use a LocalDataSource 
+		 var cbtitle = document.getElementById("cookbook_title");
+		  	var cbDS = new YAHOO.util.XHRDataSource("listCookbooks");
+			cbDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+		    // Define the schema of the delimited results
+		    cbDS.responseSchema = {
+		        recordDelim: "\n",
+		        fieldDelim: "\t"
+		    };
+		//alert('test');
+	
+	
+	   // Instantiate the AutoComplete 
+	   	var cbAC = new YAHOO.widget.AutoComplete(tf, ddf, cbDS); 
+	   	cbAC.useShadow = true;
+		cbAC.animVert = true;  
+		cbAC.maxResultsDisplayed = 20;
+		cbAC.minQueryLength = 2;
+	   	cbAC.typeAhead = false; 
+		cbAC.queryMatchContains = true; 
+		cbAC.useIFrame = true; 
+		cbAC.forceSelection = true; 
+
+
+	function fnCallback(e, args) {
+
+		//alert(e);
+		document.findcookbook.submit();
+	 }
+	cbAC.itemSelectEvent.subscribe(fnCallback);
+
+	return cbAC;
+	}
+	
+	
+	
+	function setAuthorAutoComplete(tf, ddf, ds){
+		// Use a LocalDataSource 
+		 var cbtitle = document.getElementById("author_name");
+		  	var cbDS = new YAHOO.util.XHRDataSource("listAuthors");
+			cbDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+		    // Define the schema of the delimited results
+		    cbDS.responseSchema = {
+		        recordDelim: "\n",
+		        fieldDelim: "\t"
+		    };
+		//alert('test');
+	
+	
+	   // Instantiate the AutoComplete 
+	   	var cbAC = new YAHOO.widget.AutoComplete(tf, ddf, cbDS); 
+	   	cbAC.useShadow = true;
+		cbAC.animVert = true;  
+		cbAC.maxResultsDisplayed = 20;
+		cbAC.minQueryLength = 2;
+	   	cbAC.typeAhead = false; 
+		cbAC.queryMatchContains = true; 
+		cbAC.useIFrame = true; 
+		cbAC.forceSelection = true; 
+
+
+	function fnCallback(e, args) {
+
+		//alert(e);
+		document.findauthor.submit();
+	 }
+	cbAC.itemSelectEvent.subscribe(fnCallback);
+
+	return cbAC;
+	}
+	
+	
+	
+	
+	</script>

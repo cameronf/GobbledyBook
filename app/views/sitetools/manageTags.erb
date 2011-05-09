@@ -1,0 +1,148 @@
+<div class="ST_manageTags_wrapper">	
+	
+<div class="ST_taglist">
+	<form id="manageTags">
+		
+		<select id="ST_sortorder" size = 1 onChange="setOrder(this);">
+			<option value="alpha">All Alphabetically</option>
+			<option value="newest">All by Date</option>
+			<option value="ing">Ingredients Only</option>
+			<option value="course">Course Only</option>
+			<option value="origin">Origin Only</option>
+		</select>
+		
+		<select id="ST_tagnames" size= 30 onclick="setDetails(this);">
+			<%   @all_tags.each do |tg| %>
+			<option value="<%=tg.id %>"
+				<% if tg.id == @selTag.to_i %>
+					Selected
+				<% end %>
+				><%=tg.name %></option>
+			
+			<% end %>
+		</select>
+	</form>
+</div>
+
+<div id="ST_tagdetails">Select a tag to edit.</div>
+
+</div>
+
+<script>
+
+
+setDetails(document.getElementById("ST_tagnames"));
+
+setSortOrderDropDown("<%=@sortorder%>");
+
+function setSortOrderDropDown(setto) {
+  ST_sortorder = document.getElementById("ST_sortorder");
+  for(index = 0; 
+    index < ST_sortorder.length; 
+    index++) {
+   if(ST_sortorder[index].value == setto)
+     ST_sortorder.selectedIndex = index;
+   }
+}
+
+
+function setDetails(tagnames){
+	    	tagid = tagnames.options[tagnames.selectedIndex].value;
+			do_remote_call("ST_tagdetails", '/sitetools/getDetails?tagid='+tagid, true);
+}
+
+function setTagName(tname, tagid){
+	taglist = document.getElementById("ST_tagnames");
+	taglist.options[taglist.selectedIndex] = new Option(tname.value, tagid, false, true);
+	do_remote_call("", '/sitetools/setTagName?tagid='+tagid+'&tagname='+tname.value, true);
+	
+}
+
+function setTagAltName(taltname, tagid){
+	do_remote_call("", '/sitetools/setTagAltName?tagid='+tagid+'&tagaltname='+taltname.value, true);
+}
+
+function setTagType(tagtypebox,tagtype, tagid){
+		if (tagtypebox.checked){
+			tagtypestr = tagtype+"=1";
+		}
+		else{
+			tagtypestr = tagtype+"=0";
+		}
+		do_remote_call("", '/sitetools/setTagType?'+tagtypestr+'&tagid='+tagid, true);
+
+}
+
+
+function setOrder(sortorder){
+	var querystr = 'sortorder='+sortorder.options[sortorder.selectedIndex].value+'&selTag=<%=@selTag%>';
+	document.location= "manageTags?"+querystr;
+}
+
+
+function replaceTag(newtag, oldtag, e){
+	var openAC = replaceoAC.isContainerOpen();
+	var	divname = "ST_manageTags_wrapper";
+  	if (e == "itemSelect"){
+		var querystr = 'oldtag='+oldtag+'&newtag='+newtag.value;
+		document.location= "replaceTags?"+querystr;
+		
+	}
+	else {
+		
+		if (!openAC){
+			if (!e) var e = window.event;
+			var keyPressed = e.which; 
+			if (!keyPressed) keyPressed = e.keyCode;
+			if (keyPressed == 13 || keyPressed == 9){
+
+				if (newtag.value != ""){
+					var querystr = 'oldtag='+oldtag+'&newtag='+newtag.value;
+	//				do_remote_call(divname, 'replaceTags?'+querystr, true);
+	//				newtag.value = "";
+					var querystr = 'oldtag='+oldtag+'&newtag='+newtag.value;
+					document.location= "replaceTags?"+querystr;
+	
+				}
+			}
+		}
+	}
+}
+
+
+
+function updateTags(tagtype, tag, tagid, e){
+//    alert(tagtype);
+	//alert(ingAC.isContainerOpen);
+	var openAC = (autooAC.isContainerOpen() || parentoAC.isContainerOpen());
+//	 alert('test 1');
+	var	divname = "ST_tagdetails";
+
+  	if (e == "itemSelect"){
+		var querystr = 'tag_id='+tagid+'&lookupname='+tag.value+'&syntype='+tagtype+'&selField='+tag.id;
+		do_remote_call(divname, 'updateTagSyns?'+querystr, true);
+		tag.value = "";
+		tag.focus();
+		tag.select();
+	}
+	else {
+		
+		if (!openAC){
+			if (!e) var e = window.event;
+			var keyPressed = e.which; 
+			if (!keyPressed) keyPressed = e.keyCode;
+			if (keyPressed == 13 || keyPressed == 9){
+
+				if (tag.value != ""){
+					var querystr = 'tag_id='+tagid+'&lookupname='+tag.value+'&syntype='+tagtype+'&selField='+tag.id;
+					do_remote_call(divname, 'updateTagSyns?'+querystr, true);
+					tag.value = "";
+					tag.focus();
+					tag.select();
+				}
+			}
+		}
+	} 
+}
+
+</script>

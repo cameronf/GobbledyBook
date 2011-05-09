@@ -1,0 +1,295 @@
+<%# recipe form main page %>
+
+<div class="recipecard_cookbook">
+	
+	<div id="cookbook_img">
+		<div class="recipecard_pageflip">
+		<% if !@prevrecipe.nil?%>
+			<a href="recipeDetailsForm?recid=<%=@prevrecipe.id %>" title="<%=@prevrecipe.name%>"><%= image_tag "/images/site/pageleft.png" %></a>
+		<% end%>
+		</div>
+		<div class="recipecard_cookbookimg">
+		<a href="http://www.amazon.com/gp/product/<%=@cookbook.ISBN %>?ie=UTF8&tag=fullycomplete-20" target="_new"><img src="http://images.gobbledybook.com/<%=@cookbook.ISBN%>.jpg" height="125px"></a>
+		</div>
+		<div class="recipecard_pageflip">	
+			<% if !@nextrecipe.nil?%>
+				<a href="recipeDetailsForm?recid=<%=@nextrecipe.id %>" title="<%=@nextrecipe.name%>"> <%= image_tag "/images/site/pageright.png" %> </a>
+			<% end%>
+		</div>
+	</div> 
+
+	<div id="recipecard_cookbookheader"><a href="editCookbook?cookbookID=<%=@cookbook.id%>"><%= @cookbook.title %></a><br>
+	    <%= @cookbook.author.name %>
+	   <br><p><br>
+	    Page:   <input type="text" value="<%=@recipe[:page] %>" name="recipepage" id="recipepage" class="recipe_details_page" tabindex=1><br>	
+	</div>
+	<div class="recipecard_pageflip">&nbsp;</div>
+	<input type="button" class="cssbutton" value="Add a Recipe" onclick="addNewRecipe();">
+	
+</div>	<!-- end recipecard_cookbook -->
+
+<div class="recipecard">
+	<div class="recipecard_header">
+		<input type="hidden" name="recipeid" value="<%=@recipe[:id]%>">
+		<div class="recipecard_name"><input type="text" value="<%=@recipe[:name] %>" name="recipename" id="recipename" class="recipe_details_name_field" tabindex=2></div>
+	    <div class="clear_float"></div>
+	 	<div class="align_left">  
+			<input type="button" class="cssbutton" value="View" onclick="viewRecipe();">	
+			<!--<input type="button" value="Add to Shopping List" onclick="recipeDetailsForm?recid=<%=@recipe[:id]%>&cookbook=<%=@cookbook.id%>">-->	
+			<input type="button" class="cssbutton" name="deletebutton" id = "deletebutton" onclick="deleteRecipe(<%=@recipe[:id]%>)" value="Delete Recipe">
+			
+		</div>	
+	</div>
+	
+	<div class="clear_float"></div>
+	
+	<div class="recipecard_info">
+
+	<div id="recipe_suggested_tags"></div>
+	<div class="recipecard_ingredients">
+		<% @tagoffset = 0 %>
+		<div class="recipecard_largelabel">Tags</div>		
+		<div id="recipe_details_all_tags"><%= render :partial => "recipe_details_form_tags"%></div>
+	</div>
+	
+	<div class="recipecard_comments">
+			<div class="recipecard_largelabel">My Comments</div>
+			<br>
+		    	<% if !current_user.id.nil?%>
+
+					<div id="rating<%=@recipe[:id]%>" class="rating_container"></div>
+
+					<script>
+						var rc_<%=@recipe[:id]%> = new Control.Rating('rating<%=@recipe[:id]%>', {value: '<%=@recipe[:rating]%>', rated: false, multiple: true}); 
+
+							rc_<%=@recipe[:id]%>.observe('afterChange',function(new_value){
+								do_remote_call('','updateRecipeRating?id=<%=@recipe[:id]%>'+'&rating='+new_value, false );
+							});
+
+					</script>
+		        	&nbsp;&nbsp;<span id="recipe_stickynote<%=@recipe[:id]%>"><%= render :partial => "stickynote", :locals => { :recipe => @recipe } %></span>
+				<div class="clear_float"></div>
+
+				<% mynote = "&nbsp;" %>
+				<%   @recipenotes[:myNotes].each do |note| %>
+					<% mynote = note.comments%>
+					<%  end %>
+					<textarea name="recipecomments" id="recipecomments" class="recipe_details_mynotes_field" tabindex="<%= @taboffset + 11 %>"><%=mynote %></textarea>
+			<% else %>
+				Log in with your Facebook account to add your own feedback. 
+			<% end %>
+			<div class="clear_float"></div>
+		<% if @recipenotes[:otherNotes].size != 0 %>
+			<div class="recipecard_largelabel">All Comments</div>
+			<%   @recipenotes[:otherNotes].each do |note| %>
+					<%=note.comments %>
+			<%  end %>	
+	    <% end %>
+	</div>	<!-- end recipecard_comments-->
+				
+
+		<div class="clear_float"></div>	
+</div>	
+
+
+
+
+
+<script type="text/javascript">
+
+var pagefield = document.getElementById("recipepage");
+pagefield.focus();
+
+function deleteTag(tagtype, recipeid, tagid){
+	do_remote_call("recipe_details_all_tags", 'deleteRecipeDetailTag?tagtype='+tagtype+'&recipe_id='+recipeid+'&tags_id='+tagid, true);
+}
+
+function deleteRelatedRecipe(tagtype, recipeid, rrid){
+	do_remote_call("recipe_details_all_tags", 'deleteRelatedRecipe?&recipe_id='+recipeid+'&rrid='+rrid, true);
+}
+
+
+function setIngAmounts(rtid){
+	var amtfield = document.getElementById("new_ing_amt_"+ rtid);
+	tagamount = amtfield.value;
+	
+	var unitfield = document.getElementById("new_ing_unit_"+rtid);
+	tagunit = unitfield.options[unitfield.selectedIndex].value;
+	
+	
+	var querystr = "recipetag_id=" + rtid + "&tagamount=" + tagamount + "&tagunit=" + tagunit + "&recipe_id=<%=@recipe[:id]%>";
+	do_remote_call('', 'updateIngAmounts?'+querystr, true);
+}
+
+function setStickyNote(thisid, isOn){
+	do_remote_call("recipe_stickynote"+thisid, 'updateStickyNote?id='+thisid+'&isOn='+isOn, false);
+}	
+
+
+function viewRecipe(){
+	document.location = "recipeDetails?recid=<%=@recipe[:id]%>&cookbook=<%=@cookbook.id%>";
+}
+
+function deleteRecipe(thisid){
+	if (confirm('Are you sure you want to delete this recipe?')){
+		do_remote_call('recipe_'+thisid, 'deleteRecipe?id='+thisid, false);
+		window.location.href="editCookbook?cookbookID=<%=@cookbook.id%>";
+	}
+}
+
+
+function addIngredient(tag){
+	var ing_tag = document.getElementById("new_ing_tag");
+	var amt_tag = document.getElementById("new_ing_amt");
+	
+	ing_tag.value = tag;
+	amt_tag.focus();
+	
+}
+
+function addSuggestedTag(tag){
+	var querystr = "recipe_tag="+ escape(tag) + "&recipe_id=<%=@recipe[:id]%>";
+	do_remote_call('recipe_details_all_tags', 'updateRecipeDetailTags?'+querystr, true);
+}
+
+
+function copytags(thisid, fromrecipe){
+	do_remote_call('recipe_details_all_tags', 'copyRecipeTags?id='+thisid+'&copyfrom='+fromrecipe, false);
+}
+
+
+function updateTags(tagtype, tag, e){
+
+	var tagfield = document.getElementById(tagtype);
+	var tagamountfield = document.getElementById("new_ing_amt");
+	var tagamount = tagamountfield.value;
+	var tagunit = document.getElementById("new_ing_unit").value;
+
+	//alert(ingAC.isContainerOpen);
+	var openAC = (ingAC.isContainerOpen() || courseAC.isContainerOpen() || originAC.isContainerOpen());
+
+	if (e == "itemSelect"){
+		var querystr = "tagtype="+tagtype+"&tagunit="+tagunit+"&tagamount="+tagamount+"&recipe_tag="+ escape(tag) + "&recipe_id=<%=@recipe[:id]%>";
+
+		do_remote_call("recipe_details_all_tags", 'updateRecipeDetailTags?'+querystr, true);
+		tagfield.value = "";
+		tagamountfield.value = "";
+
+		if (tagtype == "new_ing_tag"){
+			tagamountfield.focus();
+			tagamountfield.select();
+			setCommentTab();
+		}
+		else{
+			tagfield.focus();
+			tagfield.select();
+		}
+	}
+	else {
+		if (!openAC){
+			if (!e) var e = window.event;
+			var keyPressed = e.which; 
+			if (!keyPressed) keyPressed = e.keyCode;
+
+			if (keyPressed == 13 || keyPressed == 9){
+				if (tag != ""){
+					var querystr = "tagtype="+tagtype+"&tagunit="+tagunit+"&tagamount="+tagamount+"&recipe_tag="+ escape(tag) + "&recipe_id=<%=@recipe[:id]%>";
+
+					do_remote_call("recipe_details_all_tags", 'updateRecipeDetailTags?'+querystr, true);
+					tagfield.value = "";
+					tagamountfield.value = "";
+
+					if (tagtype == "new_ing_tag"){
+						tagamountfield.focus();
+						tagamountfield.select();
+						setCommentTab();
+					}
+					else{
+						tagfield.focus();
+						tagfield.select();
+					}
+				}
+			}
+		}
+	}
+}
+
+
+function updateRelatedRecipe(rrfield, rname, e){
+
+	var tagfield = document.getElementById(rrfield);
+
+	//alert(ingAC.isContainerOpen);
+	var openAC = relatedrecipeAC.isContainerOpen();
+
+	if (e == "itemSelect"){
+		var querystr = "&related_name="+ escape(rname) + "&recipe_id=<%=@recipe[:id]%>";
+
+		do_remote_call("recipe_details_all_tags", 'updateRelatedRecipes?'+querystr, true);
+		tagfield.value = "";
+		tagfield.focus();
+		tagfield.select();
+	}
+	else {
+		if (!openAC){
+			if (!e) var e = window.event;
+			var keyPressed = e.which; 
+			if (!keyPressed) keyPressed = e.keyCode;
+
+			if (keyPressed == 13 || keyPressed == 9){
+				if (tag != ""){
+					var querystr = "&related_name="+ escape(rname) + "&recipe_id=<%=@recipe[:id]%>";
+
+					do_remote_call("recipe_details_all_tags", 'updateRelatedRecipes?'+querystr, true);
+					tagfield.value = "";
+					tagfield.focus();
+					tagfield.select();
+				}
+			}
+		}
+	}
+}
+
+
+
+function addNewRecipe(){
+	document.location= "recipeDetailsForm?recid=&cookbook=<%=@cookbook.id%>";
+}
+
+function setCommentTab(){
+  var commentfield = document.getElementById("recipecomments");
+  commentfield.tabIndex = commentfield.tabIndex + 3;
+}
+
+</script>
+
+
+<%= observe_field(			:recipename, 
+							:url => 'updateRecipeName',
+							:frequency => 0.15, 
+							:with => "'recipe_name='+ escape($('recipename').value) + '&recipe_id="+@recipe[:id].to_s() +"'"
+							)
+							%>
+
+<%= observe_field(			:recipepage, 
+							:url => 'updateRecipePage', 
+							:with => "'recipe_page='+ escape($('recipepage').value) + '&recipe_id="+@recipe[:id].to_s()+"'"							
+							)
+							%>
+
+<%= observe_field(			:recipecomments, 
+							:frequency => 0.05,
+							:url => 'updateRecipeComments', 
+							:with => "'recipe_comments='+ escape($('recipecomments').value) + '&recipe_id="+@recipe[:id].to_s()+"'"							
+							)
+							%>
+
+
+
+<%= observe_field(		:cooktime, 
+						:url => 'updateRecipeTags' ,
+						:with => "'lastrecipediv='+escape($('lastrecipediv').value)+'&tagtype=new_time_tag&recipe_tag='+ escape($('cooktime').value) + '&recipe_id="+@recipe[:id].to_s()+"'",	
+						:update => 'recipe_form_tag_list',
+						:frequency => 0.05
+
+						)%>

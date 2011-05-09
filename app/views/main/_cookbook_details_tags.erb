@@ -1,0 +1,10 @@
+<%#this is the partial that draws the list of applied tags to cookbooks page%>
+
+
+<%   @cookbookTags.each do |tg| %>
+	<div class="cookbook_tag_list">
+		<span class="hot_button" onClick="deleteCBTag('<%=@cookbook.id%>','<%=tg[:tid]%>')" title="Remove tag">
+			&nbsp;[x]&nbsp;<span class="tag_name"><%=tg[:name] %></span>&nbsp;
+		</span>
+	</div>
+<%  end %>

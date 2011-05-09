@@ -1,0 +1,24 @@
+  *Rails3: Did a big update [cam]
+
+  *Photo: Added initial support for recipe photos [cam]
+
+  *Perf: refactored onlymine, slight speedup for editCookbook [cam]
+
+  *Perf: refactor homepage view - don't need tags etc. [cam]
+
+  *Perf: reduced SQL calls on homepage [cam]
+
+  *Perf: reduced SQL calls in findRecipe [cam]
+
+  *Rails: updated to new version of rails [cam]
+
+  *Perf: moved the eager associations into the model, cleans up the code [cam]
+
+  *RelatedRecipe - added the two way foreign key, and fixed up the controller to
+  match [cam]
+
+  *Perf: changed the way editCookbook is called - revamped the models [cam]
+
+  *Perf: added New Relic RPM support to start to track down perf... [cam]
+
+* CREATED

@@ -1,0 +1,121 @@
+<%#this is the recipe tag summary partial %>
+
+
+<div name="ingredients_list" class="recipe_details_tag_wrapper">	
+	<div class="recipecard_taglabel">Ingredients</div>	
+	
+		<div  class="sd_icons">
+		<% if @recipe[:isVegan]%>
+			<img src="<%=image_path("site/vegan.png") %>" title="Vegan and Vegetarian">
+		<% else %>
+			<% if @recipe[:isOvo]%>
+				<img src="<%=image_path("site/ovo.png") %>" title="Lacto Ovo Vegetarian">
+			<% end %>
+		<% end %>
+		<% if @recipe[:isGF]%>
+			<img src="<%=image_path("site/gf.png") %>" title = "Gluten Free">
+		<% end %>
+		</div>
+	
+	<div class="clear_float"></div>
+	<div class="recipe_details_tag_group">
+		<div id="recipe_details_new_ing_tag">	
+			<table>
+			<%   @recipe[:ingTags].each do |tg| %>
+				<div class="recipe_details_tag_column">
+				<span class="tag_name">
+					<tr valign="top">
+						<td border=1 align="right"><div class="recipecard_amount"><%=tg[:amt]%> <%=tg[:unit]%></div></td>
+						<td align="left"><%=tg[:name] %></td>
+					</tr>
+				</span>
+				</div>
+			<%  end %>
+			</table>
+		</div>
+	</div> <!-- end recipe_details_tag_group -->
+	<div class="clear_float"></div>
+</div>	<!-- end recipe_details_tag_wrapper -->
+
+
+
+<% if @recipe[:relatedRecipes].size > 0 %>
+<div name="related_recipes" class="recipe_details_tag_wrapper">
+	<div class="recipe_details_tag_type"><div class="recipecard_largelabel">Needed Recipes</div></div>
+
+	<div class="recipe_details_tag_group">
+
+		<div id="recipe_details_new_course_tag">
+		<%   @recipe[:relatedRecipes].each do |rr| %>
+			<div class="recipe_details_tag_column">	
+				<a href="recipeDetails?recid=<%=rr[:rrid]%>"><%=rr[:rrname]%></a>&nbsp;
+			</div>
+		<%  end %>
+		</div><!-- end course recipe_details_new_course_tag -->
+	</div> <!-- end recipe_details_tag_group -->
+</div>	<!-- end recipe_details_tag_wrapper -->	
+<% end %>
+
+<% if @recipe[:quantity] != "" %>	
+<div name="recipe_makes" class="recipe_details_tag_wrapper">
+	<div class="recipe_details_tag_type"><div class="recipecard_largelabel">Makes</div></div>
+		<div class="recipe_details_tag_group">
+			<div id="recipe_details_new_origin_tag">		
+				<%=@recipe[:quantity] %>
+			</div>
+		</div> <!-- end recipe_details_tag_group -->
+</div>	<!-- end recipe_details_tag_wrapper -->	
+<% end %>
+
+	
+<% if @recipe[:originTags].size > 0 %>	
+<div name="cuisine_list" class="recipe_details_tag_wrapper">
+	<div class="recipe_details_tag_type"><div class="recipecard_largelabel">Cuisine</div></div>
+		<div class="recipe_details_tag_group">
+			<div id="recipe_details_new_origin_tag">		
+				<%   @recipe[:originTags].each do |tg| %>
+				<div class="recipe_details_tag_column">
+					<%=tg[:name] %>
+				</div>
+				<%  end %>
+			</div>
+		</div> <!-- end recipe_details_tag_group -->
+</div>	<!-- end recipe_details_tag_wrapper -->	
+<% end %>
+
+<div name ="other_tags_list" class="recipe_details_tag_wrapper">	
+
+	<% if @recipe[:timeTags].size > 0 %>		
+
+		<div class="recipe_details_tag_type"><div class="recipecard_largelabel">Total Time</div></div>
+		<div class="recipe_details_tag_group">
+				<span class="recipe_tags">
+					<%   @recipe[:timeTags].each_with_index do |tg,i| %>
+					<%=tg[:name] %>
+					<%  end %>
+				</span><br>				
+		</div><!-- end cooktime recipe_details_tag_group -->
+		<div class="clear_float"></div>
+	<% end %>
+
+
+	<% if @recipe[:courseTags].size > 0 %>
+
+  		<div class="recipe_details_tag_type"><div class="recipecard_largelabel">Other Tags</div></div>
+
+		<div class="recipe_details_tag_group">
+
+			<div id="recipe_details_new_course_tag">
+			<%   @recipe[:courseTags].each do |tg| %>
+				<div class="recipe_details_tag_column">	
+					<%=tg[:name] %>&nbsp;
+				</div>
+			<%  end %>
+			</div><!-- end course recipe_details_new_course_tag -->
+		</div> <!-- end recipe_details_tag_group -->
+    <% end %>	
+
+</div>	<!-- end recipe_details_tag_wrapper -->
+<div class="clear_float"></div>
+
+	

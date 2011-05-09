@@ -1,0 +1,15 @@
+<%#this is the tag browser on the home page and find recipe page%>
+
+<% if !@startswith.nil? || @searchTags.size > 50 %>
+	<% ('a' .. 'z').each do |ltr| %>
+		<a href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=<%=@tagtype%>&startswith=<%=ltr%>", true);'><%=ltr%></a>
+	<% end %>
+	<a href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=<%=@tagtype%>&startswith=#", true);'>#</a>
+	
+<% end %>
+<p>
+<% if @searchTags.size < 50 || !@startswith.nil?%>	
+	<%   @searchTags.each_with_index do |tg, i| %>
+			<a href="javascript:findBrowseTag('<%=tg%>')"  class="tag_name"><%=tg %></a>&nbsp;
+	<%  end %>	
+<% end %>

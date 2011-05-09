@@ -1,0 +1,189 @@
+<%#this is the main summary page for a cookbook %>
+
+
+<% signedin = user_signed_in? %>
+	
+<div id="edit_cookbook_main">
+
+	<div id="edit_cookbook_header">
+
+		<div id="cookbook_img"><img src="http://images.gobbledybook.com/<%=@cookbook.ISBN%>.jpg"></div>
+
+		<div class="cookbook_meta_wrapper">
+			<div class="cookbook_meta" id="cookbook_name"><%= @cookbook.title %></div>
+			<div class="cookbook_meta"><a href="byAuthorCookbooks?author_name=<%= @cookbook.author.name %>"><%= @cookbook.author.name %></a></div>
+			<div class="cookbook_meta"><%= @cookbook.publisher.displayname %> (<%= @cookbook.publicationdate %>), <%= @cookbook.bookbinding %> (ISBN:<%= @cookbook.ISBN %>)</div>
+			<div class="cookbook_meta">
+				<div id="cbrating" class="rating_container"></div>
+				<%
+					if @cookbook.rating.nil?
+						cbrating = 0
+					else
+						cbrating = @cookbook.rating
+					end
+				%>
+					<script>
+						var cbrating = new Control.Rating('cbrating',{value:<%=cbrating%> , rated: true});
+					</script>
+			</div>
+			<% if signedin %>
+			<br>
+			<div class="cookbook_meta">Tags:
+					<div class="clear_float"></div>
+					<div id="cookbook_details_tag_list">
+						<%   @cookbookTags.each do |tg| %>
+							<div class="cookbook_tag_list">
+								<span class="hot_button" onClick="deleteCBTag('<%=@cookbook.id%>','<%=tg[:tid]%>')" title="Remove tag">
+									&nbsp;[x]&nbsp;<span class="tag_name"><%=tg[:name] %></span>&nbsp;
+								</span>
+							</div>
+						<%  end %>
+					</div>
+					<div class="clear_float"></div>
+					<div class="cookbook_add_tag_wrapper">
+					<div id="cookbook_tag_drop_down" >
+						<input type="text" value="" name="new_cookbook_tag" id="new_cookbook_tag" onKeyPress="updateCBTags('new_cookbook_tag', this.value, event);" onFocus="this.select();" title="Add tags here that apply to every recipe in the book, and we'll autofill them in for you as you add recipes.">
+						<div id="new_cbtag_drop_down"></div>
+					</div>
+					</div>
+					
+					<div class="clear_float"></div>
+					<div class="cookbook_meta">
+						<form name="user_cookbook_meta">
+							<%= check_box_tag "own_it","@setOwned",  @setOwned %> I own this
+							<%= check_box_tag "want_it","@setWant", @setWant %> I want this
+							&nbsp;&nbsp;&nbsp;Order from: <a href="http://www.amazon.com/gp/product/<%=@cookbook.ISBN %>?ie=UTF8&tag=fullycomplete-20" target="_new">Amazon</a> | <a href="http://powells.com/cgi-bin/partner?partner_id=34738&cgi=search/search&searchtype=isbn&searchfor=<%=@cookbook.ISBN %>" target="_new">Powell's Books</a>
+						</form>
+						
+
+						<%= observe_field(		:own_it, 
+												:url => { :action => :setOwned }, 
+												:with => "'own_it='+element.checked+'&cookbook_id="+@cookbook.id.to_s()+"'"
+												)%>
+
+						<%= observe_field(		:want_it, 
+												:url => { :action => :setWant }, 
+												:with => "'want_it='+element.checked+'&cookbook_id="+@cookbook.id.to_s()+"'"
+												)%>
+
+				</div>		
+			</div>
+			<% end %>
+		</div>	
+			<% if signedin %>
+			<div class="clear_float"></div>
+			<div class="add_button"><input type="button" class="cssbutton" value="Add a Recipe" onclick="addNewRecipe();"></div>
+			<% end %>
+	</div>
+
+	<div class="recipe_list_wrapper">
+		<div id="edit_recipe_list"><%= render :partial => "recipeslist"%></div>	
+	</div>	
+
+</div>
+<div id="spacer">&nbsp;</div>
+
+<div id="find_cookbook_wrapper">
+			<div class="find_title">Add more of your cookbooks!</div> 
+		
+				Find your cookbooks and start adding recipes. You might find that someone has even beaten you to it! Don't forget to tag all those recipes that you want to come back to as you enter. 
+				
+		<p>
+					To find a cookbook to enter, just start by typing the interesting part of the title or part of the author's name. For example, <em>Naked Chef</em> for any of the books with Naked Chef in the title, and then pick from the drop down.<br>&nbsp;<br>
+				  <p>
+					<div class="find_title">Find a Cookbook:</div><%= render :partial => "cookbookac"%>	<p>
+
+</div>
+
+
+<script type="text/javascript">
+	
+	alltagAC = setTagAutoComplete("new_cookbook_tag", "new_cbtag_drop_down", "listTags");
+
+	function setTagAutoComplete(tf, ddf, ds){
+		// Use a LocalDataSource 
+		 var gbtags = document.getElementById(tf);
+		  	var thisDS = new YAHOO.util.XHRDataSource(ds);
+			thisDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+		    // Define the schema of the delimited results
+		    thisDS.responseSchema = {
+		        recordDelim: "\n",
+		        fieldDelim: "\t"
+		    };
+		//alert('test');
+
+	   // Instantiate the AutoComplete 
+	   	var oAC = new YAHOO.widget.AutoComplete(tf, ddf, thisDS); 
+	   	oAC.useShadow = true;
+		oAC.animVert = true;  
+		oAC.maxResultsDisplayed = 20;
+		oAC.minQueryLength = 2;
+	   	oAC.typeAhead = false; 
+		oAC.queryMatchContains = true; 
+		oAC.useIFrame = true; 
+
+	function fnCallback(e, args) {
+
+	//	alert(e);
+		updateCBTags(tf, args[2][0], e);	
+
+	 }
+	oAC.itemSelectEvent.subscribe(fnCallback);
+
+	return oAC;
+	}
+	
+	
+
+function setStickyNote(thisid, isOn){
+	do_remote_call("recipe_stickynote"+thisid, 'updateStickyNote?id='+thisid+'&isOn='+isOn, false);
+}	
+
+function addNewRecipe(){
+	document.location= "recipeDetailsForm?recid=&cookbook=<%=@cookbook.id%>";
+}
+
+function updateCBTags(tagtype, tag, e){
+
+	var tagfield = document.getElementById(tagtype);
+
+	//alert(ingAC.isContainerOpen);
+	var openAC = alltagAC.isContainerOpen();
+
+	var	divname = "cookbook_details_tag_list";
+
+	if (e == "itemSelect"){
+		var querystr = "recipe_tag="+ escape(tag) + "&cookbooks_id=<%=@cookbook.id%>";
+		do_remote_call(divname, 'updateCookbookTags?'+querystr, true);
+		tagfield.value = "";
+		tagfield.focus();
+		tagfield.select();
+	}
+	else {
+		if (!openAC){
+			if (!e) var e = window.event;
+			var keyPressed = e.which; 
+			if (!keyPressed) keyPressed = e.keyCode;
+
+			if (keyPressed == 13 || keyPressed == 9){
+				if (tag != ""){
+					var querystr = "recipe_tag="+ escape(tag) + "&cookbook_id=<%=@cookbook.id%>";
+					do_remote_call(divname, 'updateCookbookTags?'+querystr, true);
+					tagfield.value = "";
+					tagfield.focus();
+					tagfield.select();
+				}
+			}
+		}
+	}
+}
+
+function deleteCBTag(cookbookid, tagid){
+	var	divname = "cookbook_details_tag_list";
+	do_remote_call(divname, 'deleteCookbookDetailTag?&cookbook_id='+cookbookid+'&tags_id='+tagid, true);
+}
+
+	
+</script>
+
+

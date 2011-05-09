@@ -1,0 +1,47 @@
+<%# page that lists all of the users personalized data %>
+
+<div id="my_stuff">
+
+	<div id="my_stuff_wrapper">
+		
+	<% if @userid.nil? %>
+	<div id="ten_seconds">
+
+	<% else %>	
+	<p>
+		<div>
+			<div class="find_title">My Cookbooks (<%=@myStuffList[:cookbooks].size %>)</div>
+			<div class="mystuff_cookbook_library">
+				<% @myStuffList[:cookbooks].each do |cookbook| %>
+		 		<div class="mystuff_cookbook_image"><a href="editCookbook?cookbookID=<%=cookbook[:id]%>"><img src="http://images.gobbledybook.com/<%=cookbook[:ISBN]%>.jpg" ></a>
+				</div>
+				<% end %>
+			</div>
+			<div class="clear_float"></div>
+		</div>
+	
+		<p>
+		<% if @myStuffList[:numrecipes] > 0 %>
+			<div class="find_title">You have entered <b><%=@myStuffList[:numrecipes]%></b> recipes. Thank you for your help!</div>
+		<% end %>
+		<p>	
+		<div>
+			<div class="find_title">My Stickies (<%=@myStuffList[:stickies].size %>)</div>
+			<div class="my_stickies">	
+				<% lastcookbookID = ""%>	
+				<% @myStuffList[:stickies].each do |recipe| %>
+					<% if lastcookbookID != recipe[:cookbookid]%>
+						<% lastcookbookID = recipe[:cookbookid]%>
+						<p>
+					<% end %>
+		 			<div class="cookbook_recipe_listing"><%= image_tag "/images/site/stickynote.png" %>&nbsp;<a href="recipeDetails?recid=<%=recipe[:id]%>"><%= recipe[:name]%></a> (p. <%= recipe[:page]%>) in <a href="editCookbook?cookbookID=<%=recipe[:cookbookid]%>"><%= recipe[:cookbook]%></a> by <%= recipe[:author]%></div>
+		
+				<% end %>
+			</div>
+		</div>
+		
+	<% end %>	
+		
+	</div>
+
+</div>

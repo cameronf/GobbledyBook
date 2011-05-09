@@ -1,0 +1,156 @@
+<%# find a recipe and results page %>
+
+<div id="find_it">
+
+		<div id="find_recipe_wrapper">
+
+			<div class="find_title">Find a Recipe</div>
+
+			Type what you are looking for by ingredient, dish, diet, cuisine type, cooktime, cooking method or any other ideas you might have:<p>
+			<div id="searchtaglist" name="searchtaglist">
+				<%= render :partial => "taglist"%>
+			</div>
+
+<br>
+			<div id="browse_by_tagtype">
+				<div class="find_title">Filter by</div>
+				<a class="tag_type_name" href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=ingredient", true);'>Ingredient</a> | 
+				<img src="<%=image_path("site/vegan.png") %>" title="Vegan and Vegetarian" onclick="setSD('findVegan');">
+				<img src="<%=image_path("site/ovo.png") %>" title="Lacto Ovo Vegetarian" onclick="setSD('findOvo');">
+				<img src="<%=image_path("site/gf.png") %>" title="Gluten Free" onclick="setSD('findGF');"> |
+				<a class="tag_type_name"  href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=cooktime", true);'>Cook Time</a> |<br>
+				<a class="tag_type_name"  href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=origin", true);'>Cuisine Type</a> |
+				<a class="tag_type_name" href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=course", true);'>Course, Dish or Other</a> 
+			</div>
+
+			<div id = "browse_tags"></div>
+		</div>
+
+
+	<script type="text/javascript">
+	
+	
+	
+	function setSD(thisid){
+		var sdfield = document.getElementById(thisid);
+		if (sdfield.value == "true"){
+			sdfield.value = "false";
+		}
+		else{
+			sdfield.value = "true";
+		}
+		document.findrecipes.submit();
+	}
+	
+		function setOnlyMine(onlyMine){
+			document.findrecipes.onlymine.value = onlyMine;
+			document.findrecipes.submit();
+		}
+		
+		function findBrowseTag(tag){
+			document.findrecipes.gbtags.value = tag;
+			document.findrecipes.submit();
+		}
+	</script>
+
+
+<% if !@notag %>
+
+	<div class="recipe_listing">
+		
+			<% if user_signed_in? && @onlymine == "1" %>
+				<a href ="javascript:setOnlyMine(0)">Show me results from any cookbook in the database</a><p>
+				<% if @recipesList.length + @otherRecipes.length > 0 %>
+					<div class="results_text">We found the following recipes in your cookbooks:</div>
+				<% else %>
+					<div class="results_text">Sorry, no recipes matched your search criteria. You might try <a href ="javascript:setOnlyMine(0)">expanding your search to the whole database</a> to discover some new cookbooks.</div>
+				<% end %>
+			<% else %>
+			
+				<% if @recipesList.length + @otherRecipes.length > 0 %>
+				<% if user_signed_in? %>
+				<a href ="javascript:setOnlyMine(1)">Show me results from just the cookbooks I own</a><p>
+				<% end %>
+				<div class="results_text"></div>
+				<% else %>
+					<div class="results_text">Sorry, no recipes matched your search criteria. </div>
+				<% end %>
+			<% end %>
+		
+		<% if @recipesList.length > 0 %>
+			<div class="find_title">Your best matches:</div>
+			<div class="results_listing">
+			<%    @recipesList.each do |listing| %>
+				 <div>
+					<span class="recipe_name_listing"><a href="recipeDetails?recid=<%=listing['recipeid']%>"><%=listing["recipename"] %></a></span>
+					<span class="cookbook_title_listing">&nbsp;in <a href="editCookbook?cookbookID=<%=listing['cookbookid']%>"><%=listing["cookbooktitle"] %></a></span> 			
+					<span class="cookbook_page_listing">&nbsp;(p. <%=listing["cookbookpage"] %>)&nbsp;</span>
+					
+							<span  class="sd_icons">
+							<% if listing["vegan"]%>
+								<img src="<%=image_path("site/vegan.png") %>" title="Vegan and Vegetarian">
+							<% else %>
+								<% if listing["ovo"]%>
+									<img src="<%=image_path("site/ovo.png") %>" title="Lacto Ovo Vegetarian">
+								<% end %>
+							<% end %>
+							<% if listing["gf"]%>
+								<img src="<%=image_path("site/gf.png") %>" title = "Gluten Free">
+							<% end %>
+							</span>
+					
+					</div>
+					<div class="clear_float"></div>
+
+			<% end %>
+			</div>
+		<% end %>
+
+		<% if @otherRecipes.length > 0 %>
+			<div class="results_text">The following recipes matched some of what you were looking for:</div>
+
+			<% @otherRecipes.each do |taglist| %>
+					<div class="results_listing_header"><%=taglist[0]%></div>
+						<div class="results_listing">
+						<% taglist[1].each do |listing| %>
+						 <div><span class="recipe_name_listing"><a href="recipeDetails?recid=<%=listing['recipeid']%>"><%=listing["recipename"] %></a></span><span class="cookbook_title_listing">&nbsp;in <a href="editCookbook?cookbookID=<%=listing['cookbookid']%>"><%=listing["cookbooktitle"] %></a></span> <span class="cookbook_page_listing">&nbsp;(p. <%=listing["cookbookpage"] %>)&nbsp;</span>
+							<span class="sd_icons">
+							<% if listing["vegan"]%>
+								<img src="<%=image_path("site/vegan.png") %>" alt="Vegan and Vegetarian">
+							<% else %>
+								<% if listing["ovo"]%>
+									<img src="<%=image_path("site/ovo.png") %>" title="Lacto Ovo Vegetarian">
+								<% end %>
+							<% end %>
+							<% if listing["gf"]%>
+								<img src="<%=image_path("site/gf.png") %>" title = "Gluten Free">
+							<% end %>
+							</span>
+							<div class="clear_float"></div>
+						</div>
+					<% end %>
+					</div>
+			<% end %>
+		<% end %>
+
+	</div>
+
+<% end %>
+</div>
+
+<div id="spacer">&nbsp;</div>
+
+<div id="find_cookbook_wrapper">
+	<div>
+			<div class="find_title">Add your cookbooks!</div> 
+		
+				Find your cookbooks and start adding recipes. You might find that someone has even beaten you to it! Don't forget to tag all those recipes that you want to come back to as you enter. <p>
+				
+					To find a cookbook to browse or enter, just start by typing the interesting part of the name. For example, <em>Naked Chef</em> for any of the books with Naked Chef in the title, and then pick from the drop down.<br>
+				  <p>
+					<div class="find_title">Find a Cookbook:</div><div><%= render :partial => "cookbookac"%></div>	<p>
+
+		
+	</div>
+
+</div>

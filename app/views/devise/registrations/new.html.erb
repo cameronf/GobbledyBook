@@ -1,0 +1,32 @@
+<div id="home_main">
+	<p>	
+<div class="find_title">Sign Up</div>
+
+Welcome to Gobbledybook! <p>
+
+In order to create a library, rate books or enter recipes from one of your cookbooks, you need to create an account. It's quick and it's free!
+<p>
+<em>Note: We've removed Facebook Connect from our site, so if you've logged in before with your Facebook account, you'll need to create a new one. Sorry for the inconvenience! If you had data associated with your Facebook account, <a href="mailto: lara@laraferroni.com">let me know</a>, and I'll try to retrieve it for you.</em> 
+<p>
+<%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
+  <%= devise_error_messages! %>
+
+  <p><%= f.label :email %><br />
+  <%= f.text_field :email %></p>
+
+  <p><%= f.label :password %><br />
+  <%= f.password_field :password %></p>
+
+  <p><%= f.label :password_confirmation %><br />
+  <%= f.password_field :password_confirmation %></p>
+
+	<p class="notice"><%= notice %></p>
+	<p class="notice"><%= alert %></p>
+
+
+  <p><%= f.submit "Sign up" %></p>
+<% end %>
+
+<%= render :partial => "devise/shared/links" %>
+
+</div>

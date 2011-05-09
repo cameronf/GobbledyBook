@@ -1,0 +1,39 @@
+
+<div class="edit_tags">
+	<div><form name="replacetags" action="replaceTags">
+
+		<p><div id="tag_auto_complete1">
+			Replace this tag: 
+			<input type="text" id="oldtag" name="oldtag" value="" onFocus="this.select();">
+			<div id="old_tag_drop_down" class="tag_drop_down"></div>
+		</div>		
+	
+		<p>
+		<div id="tag_auto_complete2">
+			with this tag: 
+			<input type="text" id="newtag" name="newtag" value="" onFocus="this.select();">
+			<div id="new_tag_drop_down" class="tag_drop_down"></div>
+		
+		</div>
+		<p><input type="submit">
+		</form>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+   // Use a LocalDataSource 
+   var tagsDS = new YAHOO.util.LocalDataSource(<%=@tagdropdown%>); 
+   // Optional to define fields for single-dimensional array 
+ 
+   // Instantiate the AutoComplete 
+   var oldtags = new YAHOO.widget.AutoComplete("oldtag", "old_tag_drop_down", tagsDS); 
+   oldtags.useShadow = true; 
+
+
+   // Instantiate the AutoComplete 
+   var newtags = new YAHOO.widget.AutoComplete("newtag", "new_tag_drop_down", tagsDS); 
+   newtags.useShadow = true;
+
+</script>	
+

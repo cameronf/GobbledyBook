@@ -1,0 +1,16 @@
+
+<div class="edit_tags">
+	<div><form name="getRatings" action="getRatings">
+
+		Go fetch the most recent book ratings on Amazon. This may take a while. 
+		<input type="hidden" value="go" name="go">
+		<p><input type="submit">
+		</form>
+		<p>
+
+		<% if !@numRatings.nil? %>
+		Updated ratings for <%=@numRatings%> cookbooks.
+		<% end %>
+		
+			</div>
+</div>

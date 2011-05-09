@@ -1,0 +1,122 @@
+<%# recipe summary main page %>
+
+
+<% signedin = user_signed_in? %>
+<div class="recipecard_cookbook">	
+	<div id="cookbook_img">
+		<div class="recipecard_pageflip">
+		<% if !@prevrecipe.nil?%>
+			<a href="recipeDetails?recid=<%=@prevrecipe.id %>" title="<%=@prevrecipe.name%>"><%= image_tag "/images/site/pageleft.png" %></a>
+		<% end%>
+		</div>
+		<div class="recipecard_cookbookimg">
+		<a href="http://www.amazon.com/gp/product/<%=@cookbook.ISBN %>?ie=UTF8&tag=fullycomplete-20" target="_new"><img src="http://images.gobbledybook.com/<%=@cookbook.ISBN%>.jpg" height="125px"></a>
+		</div>
+		<div class="recipecard_pageflip">	
+			<% if !@nextrecipe.nil?%>
+				<a href="recipeDetails?recid=<%=@nextrecipe.id %>" title="<%=@nextrecipe.name%>"> <%= image_tag "/images/site/pageright.png" %> </a>
+			<% end%>
+		</div>
+	</div> 
+
+	<div id="recipecard_cookbookheader"><a href="editCookbook?cookbookID=<%=@cookbook.id%>"><%= @cookbook.title %></a><br>
+	    <%= @cookbook.author.name %><br>
+	    <p><br>
+	    Page:   <%=@recipe[:page] %>
+	<br>	
+	</div>
+	<div class="recipecard_pageflip">&nbsp;</div>
+	<input type="button" class="cssbutton" value="Add a Recipe" onclick="addNewRecipe();">
+	
+</div>	<!-- end recipecard_cookbook -->
+
+
+<div class="recipecard">
+	<div class="recipecard_header">
+		<input type="hidden" name="recipeid" value="<%=@recipe[:id]%>">
+		<div class="recipecard_name"><%=@recipe[:name] %></div>
+	    <div class="clear_float"></div>
+	 	<div class="align_left">  
+			<% if signedin %>
+			<input type="button" class="cssbutton" value="Edit" onclick="editRecipe();">	
+			<!--<input type="button" value="Add to Shopping List" onclick="recipeDetailsForm?recid=<%=@recipe[:id]%>&cookbook=<%=@cookbook.id%>">	-->
+			<% end %>
+		</div>	
+	</div>
+	
+	<div class="clear_float"></div>
+	
+	<div class="recipecard_info">
+	
+		<div class="recipecard_ingredients"><div id="recipe_details_all_tags"><%= render :partial => "recipe_details_tags"%></div></div>
+		
+		<div class="recipecard_comments">
+			<div class="recipecard_largelabel">My Comments</div>
+			<br>
+		    	<% if signedin %>
+				
+							<div id="rating<%=@recipe[:id]%>" class="rating_container"></div>
+
+							<script>
+								var rc_<%=@recipe[:id]%> = new Control.Rating('rating<%=@recipe[:id]%>', {value: '<%=@recipe[:rating]%>', rated: false, multiple: true}); 
+
+									rc_<%=@recipe[:id]%>.observe('afterChange',function(new_value){
+										do_remote_call('','updateRecipeRating?id=<%=@recipe[:id]%>'+'&rating='+new_value, false );
+									});
+
+							</script>
+				        &nbsp;&nbsp;<span id="recipe_stickynote<%=@recipe[:id]%>"><%= render :partial => "stickynote", :locals => { :recipe => @recipe } %></span>
+				<div class="clear_float"></div>
+					<% mynote = "&nbsp;" %>
+					<%   @recipenotes[:myNotes].each do |note| %>
+						<% mynote = note.comments%>
+					<%  end %>
+					<textarea name="recipecomments" id="recipecomments" class="recipe_details_mynotes_field"><%=mynote %></textarea>
+				<% else %>
+					<em>Log in to add your own feedback. </em>
+					<p>
+				<% end %>
+				
+				<% if @recipenotes[:otherNotes].size != 0 %>
+				<div class="recipecard_largelabel">All Comments</div>
+					<%   @recipenotes[:otherNotes].each do |note| %>
+							<%=note.comments %>
+
+					<%  end %>
+			    <% end %>
+			
+		</div><!-- end recipecard_comments -->
+		
+	</div><!-- end recipecard_info -->
+	
+	<div class="clear_float"></div>
+	
+</div>	<!-- end recipecard -->
+
+<div class="clear_float"></div>
+
+
+
+<script type="text/javascript">
+
+function setStickyNote(thisid, isOn){
+	do_remote_call("recipe_stickynote"+thisid, 'updateStickyNote?id='+thisid+'&isOn='+isOn, false);
+}	
+
+
+function editRecipe(){
+	document.location = "recipeDetailsForm?recid=<%=@recipe[:id]%>&cookbook=<%=@cookbook.id%>";
+}
+
+function addNewRecipe(){
+	document.location= "recipeDetailsForm?recid=&cookbook=<%=@cookbook.id%>";
+}
+
+</script>
+
+
+<%= observe_field(			:recipecomments, 
+							:url => 'updateRecipeComments', 
+							:with => "'recipe_comments='+ escape($('recipecomments').value) + '&recipe_id="+@recipe[:id].to_s()+"'"							
+							)
+							%>

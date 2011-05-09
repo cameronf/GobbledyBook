@@ -1,0 +1,127 @@
+<% if !@tg.nil? %>
+
+<form>
+Name:<input type="text" name="tagname" value="<%=@tg.name %>" onchange="setTagName(this, <%=@tg.id%>);"> <p>
+Alt Name (example, plural):<input type="text" name="tagname" value="<%=@tg.altname %>" onchange="setTagAltName(this, <%=@tg.id%>);"> 
+<input type ="hidden" name = "id" value = "<%=@tg.id%>">
+
+<p>
+This tag is a: (you can select more than one)<p>
+	
+<input type="checkbox" name="ing" id="ing" 
+	<% if @tg.ingredient %> checked <% end %>
+onclick= "setTagType(this,'ing', '<%=@tg.id%>')"> Ingredient
+
+	<input type="checkbox" name="course" id="course" 
+	<% if @tg.course %> checked <% end %>
+onclick= "setTagType(this,'course', '<%=@tg.id%>')"> Course or Dish
+
+<input type="checkbox" name="origin" id="origin"
+	<% if @tg.origin %> checked <% end %>
+onclick= "setTagType(this,'origin', '<%=@tg.id%>')"> Cuisine Type
+
+
+<!-- this section is where you enter additional tags that will appear when you search for the selected tag (ie, if apple is selected, you might enter apple pie)-->
+
+	<!-- this section is where you enter additional tags that will search for this tag when the user searches (ie, if apple is selected, you might enter fruit)-->
+	<div class="ST_syn_tag_wrap">	
+	   Include these tags in searches for <%=@tg.name %>:<br>
+		<%   @tagSynonyms.each do |tname| %>
+			<span id="ST_sameas_list" class="hot_button" onClick="<%= remote_function(:update => 'ST_tagdetails', :url => 'removeSynTag?tag_id=' + @tg.id.to_s()+'&lookupname='+tname+'&syntype=sameas') %>">
+					&nbsp;[x]&nbsp;<span ><%=tname %></span>&nbsp;<br>
+			</span>
+		<%  end %>
+
+	
+		<div class="recipe_details_add_tag_wrapper">	
+			<div>Add more tags:</div>
+				<div id="ST_sameas_drop_down" >
+					<input type="text" value="" name="ST_gbtag" id="ST_gbtag" onKeyPress="updateTags('sameas', this,<%=@tg.id%>, event);" onFocus="this.select();" title="">
+					<div id="tag_dd"></div>
+				</div>
+		</div>
+		
+	</div>
+
+	<div class="clear_float"></div>
+
+	<!-- this section is where you enter additional tags that will search for this tag when the user searches (ie, if apple is selected, you might enter fruit)-->
+	<div class="ST_syn_tag_wrap">
+	
+	Include <%=@tg.name %> in searches for these tags:<br> 
+	
+		<%   @tagParents.each do |tname| %>
+			<span id="ST_sameas_list" class="hot_button" onClick="<%= remote_function(:update => 'ST_tagdetails', :url => 'removeSynTag?tag_id=' + @tg.id.to_s()+'&lookupname='+tname+'&syntype=parent') %>">
+					&nbsp;[x]&nbsp;<span ><%=tname %></span>&nbsp;<br>
+			</span>
+		<%  end %>
+	
+			<div class="recipe_details_add_tag_wrapper">	
+				<div>Add more tags:</div>
+					<div id="ST_parent_drop_down" >
+						<input type="text" value="" name="ST_parenttag" id="ST_parenttag" onKeyPress="updateTags('parent', this,<%=@tg.id%>, event);" onFocus="this.select();" title="">
+						<div id="parent_dd"></div>
+					</div>
+			</div>
+
+	</div>
+	
+	<div class="ST_syn_tag_wrap">
+		Replace <%=@tg.name%> with this tag: 
+		<div id="ST_replace_drop_down" >
+			<input type="text" id="ST_replacementtag" name="ST_replacementtag" value="" onFocus="this.select();" onKeyPress="replaceTag(this, '<%=@tg.name%>', event);">
+			<div id="replace_dd"></div>
+		</div>
+	</div>	
+	
+	<div>
+		<a href="/sitetools/deleteTag?id=<%=@tg.id%>"> 
+			Delete this tag</a>
+	</div>
+
+</form>
+
+<% end %>
+
+<script>
+autooAC = setTagAutoComplete("ST_gbtag", "tag_dd", "listTags");
+parentoAC = setTagAutoComplete("ST_parenttag", "parent_dd", "listTags");
+replaceoAC = setTagAutoComplete("ST_replacementtag", "replace_dd", "listTags");
+
+function setTagAutoComplete(tf, ddf, ds){
+	// Use a LocalDataSource 
+	 var gbtags = document.getElementById(tf);
+	 var thisDS = new YAHOO.util.XHRDataSource(ds);
+		thisDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+	    // Define the schema of the delimited results
+	    thisDS.responseSchema = {
+	        recordDelim: "\n",
+	        fieldDelim: "\t"
+	    };
+
+   // Instantiate the AutoComplete 
+   	var oAC = new YAHOO.widget.AutoComplete(tf, ddf, thisDS); 
+   	oAC.useShadow = true;
+	oAC.animVert = true;  
+	oAC.maxResultsDisplayed = 20;
+	oAC.minQueryLength = 2;
+   	oAC.typeAhead = false; 
+	oAC.queryMatchContains = true; 
+	oAC.useIFrame = true;
+
+	function fnCallback(e, args) {
+
+	 }
+	oAC.itemSelectEvent.subscribe(fnCallback);
+
+	return oAC;
+}	
+
+<% if !@selField.nil? %>
+	selField = document.getElementById("<%=@selField%>");
+	selField.focus();
+	selField.select();
+<% end %>				
+
+
+</script>

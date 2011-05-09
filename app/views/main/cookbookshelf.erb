@@ -1,0 +1,14 @@
+<%# page that lists all of the indexed cookbooks%>
+<p>
+<div id="my_stuff">
+		<div id="my_stuff_wrapper">
+<div class="find_title">The Gobbledybook Library (<%=@indexedbooks.size %>)</div>
+<div class="mystuff_cookbook_library">
+	<% @indexedbooks.each do |cookbook| %>
+	 	<div class="mystuff_cookbook_image"><a href="editCookbook?cookbookID=<%=cookbook[:id]%>"><img src="http://images.gobbledybook.com/<%=cookbook[:ISBN]%>.jpg" height=80></a></div>
+
+	<% end %>
+</div>
+<div class="clear_float"></div>
+</div>
+</div>

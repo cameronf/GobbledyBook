@@ -1,0 +1,326 @@
+<%#this is the form (partial) to enter recipe data %>
+
+
+<div name="ingredients_list" class="recipe_details_tag_wrapper">	
+	<div class="recipecard_smalllabel">Ingredients:</div>
+	<div class="clear_float"></div>
+	<div class="recipe_details_tag_group">
+			<div id="recipe_details_new_ing_tag">	
+			<% @taboffset= @recipe[:ingTags].size %>
+			<%   @recipe[:ingTags].each_with_index do |tg,tabnum| %>
+			   <% taboffset = tabnum + 3 %>
+				<div class="recipe_details_tag_column">
+				<span class="recipe_details_tag_name">
+				
+					<input tabindex="<%= tabnum + 3%>" type="text" size="6" name="new_ing_amt_<%=tg[:rt]%>" id="new_ing_amt_<%=tg[:rt]%>" class="new_ing_amt" value="<%=tg[:amt]%>" onChange="setIngAmounts('<%=tg[:rt]%>')">
+					
+					<select tabindex="<%= tabnum + 3%>" name="new_ing_unit_<%=tg[:rt]%>" id="new_ing_unit_<%=tg[:rt]%>" class="new_ing_amt" onChange="setIngAmounts('<%=tg[:rt]%>')">
+						<% @units.each do |unit| %>
+							<option id="optUnit"
+								<% if unit.unit == tg[:unit]%>
+									SELECTED
+								<% end %>
+							value="<%=unit.id%>"><%=unit.unit%></option>
+						<% end %>
+					</select>
+				<%=tg[:name]%> <span class="delete_ing_tag" onClick="deleteTag('new_ing_tag','<%=@recipe[:id]%>','<%=tg[:tid]%>')" title="Remove tag">
+						&nbsp;[x]&nbsp;</span>
+					</span>&nbsp;
+				</span>
+				</div>
+			<%  end %>
+			</div>
+			<div class="recipe_details_add_tag_wrapper">	
+				Add new: 
+					<div id = "tag_new_ing_wrapper">
+						<div class="tag_ing_new_amt">
+							<input tabindex="<%= @taboffset + 2 %>" type="text" size="6" name="new_ing_amt" id="new_ing_amt" class="new_ing_amt" value="">
+							<select tabindex="<%= @taboffset + 3 %>" name="new_ing_unit" id="new_ing_unit" class="new_ing_amt">
+								
+								<option  value="" Selected></option>
+								<% @units.each do |unit| %>
+									<option  value="<%=unit.id%>"><%=unit.unit%></option>
+								<% end %>
+							</select>
+						</div>
+						<div id="tag_ing_drop_down">
+							<input type="text" tabindex="<%= @taboffset + 4 %>" value="" name="new_ing_tag" id="new_ing_tag" onKeyPress="updateTags('new_ing_tag', this.value, event);" onFocus="this.select();" title="Add the ingredients for the recipe as they are listed... we'll automatically allow for searching on synonyms so you don't have to worry about it.">
+							<div id="new_ing_drop_down" ></div>
+						</div>
+					
+					</div>
+
+
+			</div> <!-- end recipe_details_add_tag_wrapper -->
+	</div> <!-- end recipe_details_tag_group -->
+	
+	
+	<div class="clear_float"></div>
+	
+	<div class="recipe_details_tag_group">
+			*Just enter the ingredient name, not how it is prepared. For example, <i>red onion</i> and not <i>red onion, chopped</i>
+	</div>
+	
+</div>	<!-- end recipe_details_tag_wrapper -->
+	
+
+<div name="related_recipes" class="recipe_details_tag_wrapper">
+<div class="recipecard_smalllabel">Needed Recipes:</div>
+	<div class="recipe_details_tag_group">
+		<div id="recipe_details_new_related_recipe">		
+			<%   @recipe[:relatedRecipes].each do |rr| %>
+			<div class="recipe_details_tag_column">
+				<span class="hot_button" onClick="deleteRelatedRecipe('new_related_recipe','<%=@recipe[:id]%>','<%=rr[:rrid]%>')" title="Remove related recipe">
+					&nbsp;[x]&nbsp;<span class="tag_name"><%=rr[:rrname]%>	
+							<% if rr[:isVegan]%>
+								<img src="<%=image_path("site/vegan.png") %>" title="Vegan and Vegetarian">
+							<% else %>
+								<% if rr[:isOvo]%>
+									<img src="<%=image_path("site/ovo.png") %>" title="Lacto Ovo Vegetarian">
+								<% end %>
+							<% end %>
+							<% if rr[:isGF]%>
+								<img src="<%=image_path("site/gf.png") %>" title = "Gluten Free">
+							<% end %>
+					</span>&nbsp;
+				</span>	
+			</div>
+			<%  end %>
+		</div>
+
+		<div class="recipe_details_add_tag_wrapper">	
+			<div>Add new:</div>
+				<div id="tag_related_recipe_drop_down" >
+					<input type="text" value="" name="new_related_recipe" id="new_related_recipe"  tabindex="<%= @taboffset + 5 %>" onKeyPress="updateRelatedRecipe('new_related_recipe', this.value, event);" onFocus="this.select();" title="Select a recipe that is referenced by this recipe.">
+					<div id="new_related_recipe_drop_down"></div>
+				</div>
+
+		</div> <!-- end recipe_details_add_tag_wrapper -->
+		
+	</div> <!-- end recipe_details_tag_group -->
+</div>
+
+		<div class="clear_float"><br></div>
+<div name="recipe_makes" class="recipe_details_tag_wrapper">
+	
+	<div class="recipecard_smalllabel">Makes:</div>
+	<div class="recipe_details_tag_group">
+
+<input type="text" value="<%=@recipe[:quantity] %>" name="quantity" id="quantity"  tabindex="<%= @taboffset + 6 %>" title="How many servings or pieces does this make?">
+
+<%= observe_field(			:quantity, 
+							:url => 'updateRecipeQuantity',
+							:frequency => 0.15, 
+							:with => "'recipe_qty='+ escape($('quantity').value) + '&recipe_id="+@recipe[:id].to_s() +"'"	
+							)
+							%>
+											
+	</div>  <!-- end diet recipe_details_tag_group -->
+</div>	
+
+	<div name="cuisine_list" class="recipe_details_tag_wrapper">
+
+		<div class="recipecard_smalllabel">Special Diet:</div>
+		<div class="recipe_details_tag_group">
+
+		<%= check_box_tag "vegan","@recipe[:isVegan]",  @recipe[:isVegan], options = {:tabindex => @taboffset+7} %><img src="<%=image_path("site/vegan.png") %>" title="Vegan and Vegetarian">
+		<%= check_box_tag "ovo","@recipe[:isOvo]", @recipe[:isOvo], options = {:tabindex => @taboffset+8} %><img src="<%=image_path("site/ovo.png") %>" title="Lacto Ovo Vegetarian">
+		<%= check_box_tag "gf","@recipe[:isGF]", @recipe[:isGF], options = {:tabindex => @taboffset+9} %><img src="<%=image_path("site/gf.png") %>" title="Gluten Free">
+
+
+		<%= observe_field(		:vegan, 
+								:url => { :action => :updateRecipeisVegan}, 
+								:with => "'isVegan='+element.checked+'&recipe_id="+@recipe[:id].to_s()+"'"
+								)%>
+
+		<%= observe_field(		:ovo, 
+								:url => { :action => :updateRecipeisOvo}, 
+								:with => "'isOvo='+element.checked+'&recipe_id="+@recipe[:id].to_s()+"'"
+								)%>
+
+		<%= observe_field(		:gf, 
+								:url => { :action => :updateRecipeisGF }, 
+								:with => "'isGF='+element.checked+'&recipe_id="+@recipe[:id].to_s()+"'"
+								)%>
+
+		</div>  <!-- end diet recipe_details_tag_group -->
+
+
+
+	
+		<div class="clear_float"></div>
+	<div class="recipecard_smalllabel">Cuisine:</div>
+		<div class="recipe_details_tag_group">
+			<div id="recipe_details_new_origin_tag">		
+				<%   @recipe[:originTags].each do |tg| %>
+				<div class="recipe_details_tag_column">
+					<span class="hot_button" onClick="deleteTag('new_origin_tag','<%=@recipe[:id]%>','<%=tg[:tid]%>')" title="Remove tag">
+						&nbsp;[x]&nbsp;<span class="tag_name"><%=tg[:name] %></span>&nbsp;
+					</span>
+				</div>
+				<%  end %>
+			</div>
+
+			<div class="recipe_details_add_tag_wrapper">	
+				<div>Add new:</div>
+					<div id="tag_origin_drop_down" >
+						<input type="text" value="" name="new_origin_tag" id="new_origin_tag"  tabindex="<%= @taboffset + 10 %>" onKeyPress="updateTags('new_origin_tag', this.value, event);" onFocus="this.select();" title="Is this dish Italian? Asian? Thai? French? Inuit? Enter that here.">
+						<div id="new_origin_drop_down"></div>
+					</div>
+
+			</div> <!-- end recipe_details_add_tag_wrapper -->
+			
+		</div> <!-- end recipe_details_tag_group -->
+		<div class="clear_float"></div>
+</div>	<!-- end recipe_details_tag_wrapper -->	
+	
+<div name ="other_tags_list" class="recipe_details_tag_wrapper">	
+		<div class="clear_float"></div>
+		
+		<div class="recipecard_smalllabel">Total Time:</div>
+		<div class="recipe_details_tag_group">
+
+			<%# this is really hacky.. but oh well.%>
+				<input type="hidden" id="cooktime" name="cooktime" value="">
+				<%= radio_button_tag "ct","", (@recipe[:cookTime]=="0"), options = {:onclick => "setCooktime('');", :tabindex => @taboffset+11}  %> Unknown<br>
+
+				<%= radio_button_tag "ct","quick", (@recipe[:cookTime]=="1"), options = {:onclick => "setCooktime('quick');", :tabindex => @taboffset+11} %> Quick (less than 1 hour)<br>
+				<%= radio_button_tag "ct","average", (@recipe[:cookTime]=="2"), options = {:onclick => "setCooktime('average');", :tabindex => @taboffset+11} %> 1 to 4 hours<br>
+				<%= radio_button_tag "ct","extended", (@recipe[:cookTime]=="3"), options = {:onclick => "setCooktime('extended');",:tabindex => @taboffset+11} %> More than 4 hours<br>
+		</div><!-- end cooktime recipe_details_tag_group -->
+		<div class="clear_float"></div>
+
+  		<div class="recipecard_smalllabel">Other Tags:
+			<br><div class="tag_examples">
+				Examples:<br>
+				party<br>
+				salads<br>
+				healthy<br>
+				cookies<br>
+				fried
+			</div>
+		</div>
+
+		<div class="recipe_details_tag_group">
+
+			<div id="recipe_details_new_course_tag">
+			<%   @recipe[:courseTags].each do |tg| %>
+				<div class="recipe_details_tag_column">
+					<span class="hot_button" onClick="deleteTag('new_course_tag','<%=@recipe[:id]%>','<%=tg[:tid]%>')" title="Remove tag">
+						&nbsp;[x]&nbsp;<span class="tag_name"><%=tg[:name] %></span>&nbsp;
+					</span>
+				</div>
+			<%  end %>
+			</div><!-- end course recipe_details_new_course_tag -->
+
+			<div class="recipe_details_add_tag_wrapper">	
+				<div>Add more tags:</div>
+					<div id="tag_course_drop_down" >
+						<input type="text" tabindex="<%= @taboffset + 12 %> value="" name="new_course_tag" id="new_course_tag" onKeyPress="updateTags('new_course_tag', this.value, event);" onFocus="this.select();" title="Here's where you enter what the recipe is... things like chocolate chip cookies, pasta salad, dim sum or fried rice. Make your tags as specific as possible... we'll take care of everything else.">
+						<div id="new_course_drop_down"></div>
+					</div>
+			</div>
+
+		</div> <!-- end recipe_details_tag_group -->
+
+	</div>	<!-- end recipe_details_tag_wrapper -->
+	<div class="clear_float"></div>
+	
+	
+	
+	
+	<script type="text/javascript">
+	ingAC = setTagAutoComplete("new_ing_tag", "new_ing_drop_down", "listIngTags");
+	courseAC = setTagAutoComplete("new_course_tag", "new_course_drop_down", "listCourseTags");
+	originAC = setTagAutoComplete("new_origin_tag", "new_origin_drop_down", "listOriginTags");
+	relatedrecipeAC = setRelatedRecipeAutoComplete("new_related_recipe", "new_related_recipe_drop_down", "listRecipes");
+
+	function setTagAutoComplete(tf, ddf, ds){
+		// Use a LocalDataSource 
+		 var gbtags = document.getElementById(tf);
+		  	var thisDS = new YAHOO.util.XHRDataSource(ds);
+			thisDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+			thisDS.scriptQueryAppend = "&cbid=<%=@cookbook.id%>";
+		    // Define the schema of the delimited results
+		    thisDS.responseSchema = {
+		        recordDelim: "\n",
+		        fieldDelim: "\t"
+		    };
+		//alert('test');
+
+	   // Instantiate the AutoComplete 
+	   	var oAC = new YAHOO.widget.AutoComplete(tf, ddf, thisDS); 
+	   	oAC.useShadow = true;
+		oAC.animVert = true;  
+		oAC.maxResultsDisplayed = 20;
+		oAC.minQueryLength = 2;
+	   	oAC.typeAhead = false; 
+		oAC.queryMatchContains = true; 
+		oAC.useIFrame = true; 
+
+	function fnCallback(e, args) {
+
+	//	alert(e);
+		updateTags(tf, args[2][0], e);	
+
+	 }
+	oAC.itemSelectEvent.subscribe(fnCallback);
+
+	return oAC;
+	}
+	
+	function setRelatedRecipeAutoComplete(tf, ddf, ds){
+		// Use a LocalDataSource 
+		 var gbtags = document.getElementById(tf);
+		  	var thisDS = new YAHOO.util.XHRDataSource(ds);
+			thisDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+			thisDS.scriptQueryAppend = "&cbid=<%=@cookbook.id%>";
+		    // Define the schema of the delimited results
+		    thisDS.responseSchema = {
+		        recordDelim: "\n",
+		        fieldDelim: "\t"
+		    };
+		//alert('test');
+
+	   // Instantiate the AutoComplete 
+	   	var oAC = new YAHOO.widget.AutoComplete(tf, ddf, thisDS); 
+	   	oAC.useShadow = true;
+		oAC.animVert = true;  
+		oAC.maxResultsDisplayed = 20;
+		oAC.minQueryLength = 2;
+	   	oAC.typeAhead = false; 
+		oAC.queryMatchContains = true; 
+		oAC.useIFrame = true; 
+
+	function fnCallback(e, args) {
+
+	//	alert(e);
+		updateRelatedRecipe(tf, args[2][0], e);	
+
+	 }
+	oAC.itemSelectEvent.subscribe(fnCallback);
+
+	return oAC;
+	}
+	
+
+
+	<% if !@stayintag.nil? %>
+			selField = document.getElementById('<%=@stayintag%>');
+			selField.focus();
+			selField.select();
+	<% end %>
+
+	<% if @autoselect %>
+		selField = document.getElementById('new_ing_tag');
+		selField.focus();
+		selField.select();
+	<% end %>				
+
+
+	function setCooktime(cttag){
+			var querystr = "tagtype=new_time_tag&tagunit=&tagamount=&recipe_tag="+ cttag + "&recipe_id=<%=@recipe[:id]%>";
+			do_remote_call("recipe_details_all_tags", 'updateRecipeDetailTags?'+querystr, true);
+	}
+
+	</script>

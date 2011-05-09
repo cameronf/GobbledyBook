@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>GobbledyBook - The Search Engine for your Cookbooks</title>
+	<meta name="authenticity-token" id="authenticity-token" content="<%= form_authenticity_token %>" />        
+	<meta name="keywords" content="cookbook, cookbooks, recipe, catalog, index, find recipes, cookbook author, recipe types, ingredients, foodie, culinary index"/> 
+	
+	<meta name="generator" content="TextMate http://macromates.com/">
+	<meta name="author" content="Lara Ferroni">
+
+
+	<!-- YUI css files -->
+		<%= stylesheet_link_tag "fonts-min.css" %>
+		<%= stylesheet_link_tag "autocomplete.css" %>
+	<!-- end YUI css files -->
+
+	<%= stylesheet_link_tag "main_styles" %>
+
+	
+	<%= javascript_include_tag :defaults, 'prototype', 'livepipe', 'event_behavior', 'hotkey'  %>
+
+	<!-- YUI script files --> 
+	
+	<%= javascript_include_tag 'yahoo-dom-event.js', 'connection-min.js','datasource-min.js', 'autocomplete-min.js','element-beta-min.js' %>
+	<%# javascript_include_tag 'yahoo-min.js', 'dom-min.js', 'event-min.js' , 'animation-min.js'%>
+
+	<!-- end YUI script files --> 
+	<%= javascript_include_tag 'rating.js'%>
+
+
+
+	<!-- Date: 2008-12-30 -->
+</head>
+<body  class=" yui-skin-sam">
+	
+	<div id="page_wrap"><div id="page_stitch">
+		<div id="page_pad">
+			<div id="header">
+				
+				<div id="header_img"><a href="/main/home"><img src="<%=image_path("site/gobbledybooklogo.png") %>" alt="GobbledyBook: A Feast of Pages"></a></div>	
+
+
+<!--  #old facebook code 
+				<% if session[:signedin] == 'facebook' %>
+					<div id="header_fb_chicklet">	
+						<%# if !session[:fbuser].pic_square.nil? %>
+						 <%# image_tag session[:fbuser].pic_square align="right"%>
+						<%#end %>
+						<br>Hi there, <%# facebook_session.user.first_name %> &nbsp;(<a href="#" onclick="FB.Connect.logout(function() { location.reload(true); })">Logout</a>)
+					</div>
+				<% else %>
+					<% if session[:signedin] == 'test'%>
+						<div id="header_fb_chicklet">
+							Hello Test User
+						</div>
+					<% else %>
+						<div id="header_fb_button">
+							<div>Sign in with Facebook:</div><p>
+							<div class="light">
+								<fb:login-button size="medium" background="light" length="short" onlogin="location.reload(true);">
+								</fb:login-button>
+							</div>
+						</div>
+					<% end %>
+				<% end %>
+				
+	-->
+	
+				<div id="header_fb_chicklet">	
+				
+					<ul class="hmenu">
+
+					</ul>
+				<%= render 'devise/menu/registration_items' %>
+			    <%= render 'devise/menu/login_items' %>
+			   	
+				
+			</div>
+
+
+					<div id="header_nav_menu">
+						<span id="header_nav_padding">&nbsp;</span><a href="/main/home" id="header_nav_item">Home</a><span id="header_nav_divider">|</span><a href="/main/findRecipes" id="header_nav_item">Find Recipes</a> <span id="header_nav_divider">|</span><a href="/main/myStuff" id="header_nav_item">My Stuff</a>
+					</div>
+				
+					
+				
+			</div>
+	
+				<%= yield :layout %>
+	
+	
+			</div>
+		</div>
+		<div id="footer">
+			<a href="/main/aboutUs">About GobbledyBook</a>  |  <a href="/main/faq">FAQ</a>  |  <a href="/main/termsofuse">Terms of Service</a>  |  <a href="/main/privacypolicy">Privacy Policy</a>  |  <a href="mailto: lara@laraferroni.com">Contact</a>  |  © 2011 GobbledyBook
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+	try {
+	var pageTracker = _gat._getTracker("UA-2613126-11");
+	pageTracker._trackPageview();
+	} catch(err) {}</script>
+	
+</body>
+</html>

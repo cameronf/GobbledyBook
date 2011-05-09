@@ -1,0 +1,159 @@
+<!-- obsolete -->
+<div class="edit_tags">
+
+<script type="text/javascript">
+		
+	function sendForm(formid){
+		var myform = document.getElementById(formid);
+	}
+	
+	function setPage(page){
+		order_form.page.value = page;
+		document.order_form.submit();
+	}
+	
+</script>
+
+
+
+
+<div class="sitetools_pagecontrols">
+
+<form name="order_form" action="tagEditor">
+
+<span onClick="order_form.page.value='<%=@prevpage%>';order_form.submit();">Previous Page</span> | <span onClick="order_form.page.value='<%=@nextpage%>';order_form.submit();">Next Page</span><p>
+Page: <input type="text" size="2" width="2" name="page" id="page">
+
+
+	<% if @sortorder == "alpha" %>
+			<input type="hidden" value = "alpha" id="sortorder" name="sortorder">
+			<input type="button" value = "Sort by Date Added" onClick="order_form.sortorder.value='added';order_form.submit();">
+	<% else %>
+		<input type="hidden" value = "added" id="sortorder" name="sortorder">
+		<input type="button" value = "Sort Alphabetically" onClick="order_form.sortorder.value='alpha';order_form.submit();">
+
+	<% end %>
+
+</form>
+</div>
+<p>&nbsp;<br>
+	
+<%   @all_tags.each do |tg| %>
+	    
+	<% tagid = "tagInfo"+tg.id.to_s() %>
+	<div id="div<%=tagid%>" class="sitetools_tagform">
+	
+		<div class="del_button" onClick="<%= remote_function(:update => 'divtagInfo'+tg.id.to_s(), :url => 'deleteTag?id=' + tg.id.to_s()) %>"> 
+		<%= image_tag "/images/site/delete_grey.png", :mouseover => "/images/site/delete_red.png" %> </div>
+	
+		<form name = "<%=tagid%>" id="<%=tagid%>" action = "saveTags">
+		<input type="text" name="tagname" value="<%=tg.name %>" onchange="sendForm('<%=tagid%>')"> 
+		<input type ="hidden" name = "id" value = "<%=tg.id%>">
+	
+		<input type="checkbox" name="ingredient" value="tg.ingredient" 
+			<% if tg.ingredient %> checked <% end %>
+		onclick= "sendForm('<%=tagid%>')"> Ingredient
+	
+			<input type="checkbox" name="course" value="tg.course" 
+			<% if tg.course %> checked <% end %>
+		onclick= "sendForm('<%=tagid%>')"> Course or Dish
+	
+		<input type="checkbox" name="origin" value="tg.origin" 
+			<% if tg.origin %> checked <% end %>
+		onclick= "sendForm('<%=tagid%>')"> Cuisine Type
+		
+			<!-- this section is where you enter additional tags that will appear when you search for the selected tag (ie, if apple is selected, you might enter apple pie)-->
+		<div id="sameas_taglist" name="sameastaglist">	
+			<div id="sitetools_tag_auto_complete">
+				<div id="sameas_autotag">Include these tags in searches for <%=tg.name %>: <input type="text" id="gbtag<%=tg.id%>" name="gbtag<%=tg.id%>" value="" onFocus="this.select();"></div>
+				<div id="tag_drop_down<%=tg.id%>" class="tag_drop_down"></div>
+			</div>
+		</div>
+			<!-- this section is where you enter additional tags that will search for this tag when the user searches (ie, if apple is selected, you might enter fruit)-->
+		
+		<div id="parent_taglist" name="parenttaglist">	
+			<div id="sitetools_tag_auto_complete">
+				<div id="parent_autotag">Include <%=tg.name %> in searches for these tags: <input type="text" id="parenttag<%=tg.id%>" name="parenttag<%=tg.id%>" value="" onFocus="this.select();"></div>
+				<div id="parent_drop_down<%=tg.id%>" class="parent_drop_down"></div>
+			</div>
+
+		</div>
+		
+		<div class="syn_tags">
+			<div class="sameas_syn_tags" id="sameas_syn_tags<%=tg.id%>">
+				<%   @tagSynonyms[tg.id].each do |tname| %>
+					<span id="syntag" class="hot_button" onClick="<%= remote_function(:update => 'sameas_syn_tags'+tg.id.to_s(), :url => 'deleteSynTag?tag_id=' + tg.id.to_s()+'&syntag_name='+tname) %>">
+							&nbsp;[x]&nbsp;<span class="tag_name"><%=tname %></span>&nbsp;
+					</span>
+				<%  end %>
+			</div>
+		
+			<div class="parent_syn_tags" id="parent_syn_tags<%=tg.id%>">
+				<%   @tagParents[tg.id].each do |tname| %>
+					<span id="parenttag" class="hot_button" onClick="<%= remote_function(:update => 'parent_syn_tags'+tg.id.to_s(), :url => 'deleteParentTag?tag_id=' + tg.id.to_s()+'&parenttag_name='+tname) %>">
+							&nbsp;[x]&nbsp;<span class="tag_name"><%=tname %></span>&nbsp;
+					</span>
+				<%  end %>
+			</div>
+		</div>
+	
+		
+<script>	
+		var autooAC = setTagAutoComplete("gbtag<%=tg.id%>", "tag_drop_down<%=tg.id%>", "listTags");
+		var parentoAC = setTagAutoComplete("parenttag<%=tg.id%>", "parent_drop_down<%=tg.id%>", "listTags");
+	
+		function setTagAutoComplete(tf, ddf, ds){
+			// Use a LocalDataSource 
+			 var gbtags = document.getElementById(tf);
+			  	var thisDS = new YAHOO.util.XHRDataSource(ds);
+				thisDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+			    // Define the schema of the delimited results
+			    thisDS.responseSchema = {
+			        recordDelim: "\n",
+			        fieldDelim: "\t"
+			    };
+		
+		   // Instantiate the AutoComplete 
+		   	var oAC = new YAHOO.widget.AutoComplete(tf, ddf, thisDS); 
+		   	oAC.useShadow = true;
+			oAC.animVert = true;  
+			oAC.maxResultsDisplayed = 20;
+			oAC.minQueryLength = 2;
+			oAC.queryMatchContains = true; 
+			oAC.forceSelection = true; 
+			oAC.useIFrame = true;
+
+
+			function fnCallback(e, args) {
+
+					
+			 }
+			oAC.itemSelectEvent.subscribe(fnCallback);
+
+			return oAC;
+			}
+
+</script>
+	
+	
+		</form>
+	
+	
+
+					
+	</div>	<!== tagform div ==>	
+
+
+	<%= observe_form tagid, 
+				:url => 'saveTags',
+				:update => 'div'+tagid
+				%>
+				
+<% end %>
+
+<p>
+			
+</div> <!== edit tags div ==>
+<p>
+
+

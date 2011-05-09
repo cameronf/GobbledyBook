@@ -1,0 +1,61 @@
+<%# page that lists all of the indexed cookbooks%>
+<p>
+<div id="my_stuff">
+		<div id="my_stuff_wrapper">
+<div class="find_title">Cookbooks by <%= @authorname %></div>
+<div class="mystuff_cookbook_library">
+	
+	<% if @indexedbooks.size == 0 %>
+		Sorry, we don't have any books by <%= @authorname %>. Did you mean:<p>
+		 <% @possibleauthors.each do |author| %>
+			<a href="byAuthorCookbooks?author_name=<%=author.name%>"><%=author.name %></a><br>
+		<% end %>
+		
+	<% else %>
+	<% @indexedbooks.each do |cookbook| %>
+	 	<div class="mystuff_cookbook_image" onMouseOver="showCookbookTasks('<%=cookbook[:id]%>')" onMouseOut="hideCookbookTasks('<%=cookbook[:id]%>')">
+			<img id="mystuff_cookbook_image<%=cookbook[:id]%>" src="http://images.gobbledybook.com/<%=cookbook[:ISBN]%>.jpg" height=150>
+			<div id="cookbookTasks<%=cookbook[:id]%>" class="cookbookTasksTB">
+				<img src="/images/site/addCB.png" onClick="setOwned('<%=cookbook[:id]%>')" title="I own this">
+				<img src="/images/site/wantCB.png" onClick="setWant('<%=cookbook[:id]%>')" title="I want this">
+				<a href="editCookbook?cookbookID=<%=cookbook[:id]%>"><img src="/images/site/gotoCB.png" title="Go to this book"></a>
+			</div>
+		</div>
+	<% end %>
+	<% end %>
+</div>
+<div class="clear_float"></div>
+</div>
+</div>
+
+<script type="text/javascript">
+
+function showCookbookTasks(thisid){
+ var thisbook;
+ thisbook = document.getElementById("cookbookTasks"+thisid);
+	thisbook.style.display = "block";
+}
+
+function hideCookbookTasks(thisid){
+ var thisbook;
+ thisbook = document.getElementById("cookbookTasks"+thisid);
+	thisbook.style.display = "none";
+}
+
+function setOwned(thisid){
+	var thisbook;
+	thisbook = document.getElementById("mystuff_cookbook_image"+thisid);
+	
+	do_remote_call('', 'setOwned?cookbook_id='+thisid+'&own_it=true', false);
+	thisbook.style.border='2px solid #993333';
+}
+
+function setWant(thisid){
+	var thisbook;
+	thisbook = document.getElementById("mystuff_cookbook_image"+thisid);
+	do_remote_call('', 'setWant?cookbook_id='+thisid+'&want_it=true', false);
+	thisbook.style.border='2px solid #996633';
+}
+
+
+</script>

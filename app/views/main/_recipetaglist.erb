@@ -1,0 +1,23 @@
+<%# obsolete file %>
+Added Tags:<br>
+<% if @recipe[:ingTags].length > 0%><span class="tag_img" title="Ingredients"><%= image_tag "/images/site/tag.png"%></span><%end%><div class="tag_group">
+	<%   @recipe[:ingTags].each do |tg| %>
+	<span class="hot_button" onClick="deleteTag('<%=@lastrecipediv%>','new_ing_tag','<%=@recipe[:id]%>','<%=tg[:tid]%>')">
+		&nbsp;[x]&nbsp;<span class="tag_name"><%=tg[:amount]%> <%=tg[:name] %></span>&nbsp;
+	</span>
+<%  end %>
+</div>
+<% if @recipe[:originTags].length > 0%><span class="tag_img" title="Cuisine Type"><%= image_tag "/images/site/tag.png"%></span><%end%><div class="tag_group">
+	<%   @recipe[:originTags].each do |tg| %>
+	<span class="hot_button" onClick="deleteTag('<%=@lastrecipediv%>','new_origin_tag','<%=@recipe[:id]%>','<%=tg[:tid]%>')">
+		&nbsp;[x]&nbsp;<span class="tag_name"><%=tg[:name] %></span>&nbsp;</span>
+	</span>
+<%  end %>
+</div>
+<% if @recipe[:courseTags].length > 0%><span class="tag_img" title="Course, Dish or Other"><%= image_tag "/images/site/tag.png"%></span><%end%><div class="tag_group">
+	<%   @recipe[:courseTags].each do |tg| %>
+	<span class="hot_button" onClick="deleteTag('<%=@lastrecipediv%>','new_course_tag','<%=@recipe[:id]%>','<%=tg[:tid]%>')">
+		&nbsp;[x]&nbsp;<span class="tag_name"><%=tg[:name] %></span>&nbsp;
+	</span>
+<%  end %>
+</div>

@@ -1,0 +1,73 @@
+<%# obsolete - shows suggested tags for a recipe based on title %>
+
+<div id="recipe_suggested_tags_spacing">
+	<div id="suggested_tags">
+		
+		<div class="tag_copy">Copy tags from this recipe: </div>
+		<div id="tag_copy_drop_down">
+			<input type="text" value="" name="new_copy_tag" id="new_copy_tag" onFocus="this.select();">
+			<div id="recipelist_drop_down"></div>
+		</div>
+		<p>
+		<div class="title_tags">
+			Suggested Tags (just click a tag to add it):
+		</div>
+		<div class="title_tags">
+			<% if @ingredientTags.size > 0%>	
+					<%   @ingredientTags.each do |tg| %>
+						<span class="hot_button" onClick="addIngredient('<%=tg%>')">
+							<span class="suggested_tag_name"><%=tg%></span>&nbsp;
+						</span>
+					<%  end %>
+			<% end %>		
+			<div class="clear_float"></div>
+			<% if @suggestedTags.size > 0%>
+				<%   @suggestedTags.each do |tg| %>
+					<span class="hot_button" onClick="addSuggestedTag('<%=tg%>')">
+						<span class="suggested_tag_name"><%=tg%></span>&nbsp;
+					</span>
+				<%  end %>
+			<% end %>
+		</div>
+	</div>
+<p>&nbsp;<p>
+</div>
+<div class="clear_float"></div>
+<p>&nbsp;<p>
+
+<script type="text/javascript">
+copyFrom = setRecipeAutoComplete("new_copy_tag", "recipelist_drop_down", "listRecipes");
+
+function setRecipeAutoComplete(tf, ddf, ds){
+	// Use a LocalDataSource 
+	 var gbtags = document.getElementById(tf);
+	
+	  	var thisDS = new YAHOO.util.XHRDataSource(ds);
+		thisDS.responseType = YAHOO.util.XHRDataSource.TYPE_TEXT;
+		thisDS.scriptQueryAppend = "&cbid=<%=@cookbookid%>";
+	    // Define the schema of the delimited results
+	    thisDS.responseSchema = {
+	        recordDelim: "\n",
+	        fieldDelim: "\t"
+	    };
+
+   // Instantiate the AutoComplete 
+   	var oAC = new YAHOO.widget.AutoComplete(tf, ddf, thisDS); 
+   	oAC.useShadow = true;
+	oAC.animVert = true;  
+	oAC.maxResultsDisplayed = 20;
+	oAC.minQueryLength = 2;
+   	oAC.typeAhead = false; 
+	oAC.queryMatchContains = true; 
+	oAC.forceSelection = true; 
+	oAC.useIFrame = true; 
+
+function fnCallback(e, args) {
+	copytags(<%=@recipe[:id]%>, args[2][0]);
+ }
+
+oAC.itemSelectEvent.subscribe(fnCallback);
+
+return oAC;
+}
+</script>

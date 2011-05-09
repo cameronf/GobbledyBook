@@ -1,0 +1,81 @@
+<%# the home page! users should be able to quickly search on a tag, find a cookbook, or browse by popular tags %>
+						
+<div id="home_main">
+			
+<div id="home_find">
+	<div id="find_recipe_wrapper">
+	
+		<div class="find_title">Find a Recipe</div>
+	
+		Type what you are looking for by ingredient, dish, diet, cuisine type, cooktime, cooking method or any other ideas you might have:<p>
+		<div id="searchtaglist" name="searchtaglist">	<%= render :partial => "taglist"%></div>
+		<p>
+		<div id="browse_by_tagtype">
+			<div class="find_title">Browse by Tags</div>
+			<a class="tag_type_name" href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=ingredient", true);'>Ingredient</a> | 
+			<a class="tag_type_name"  href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=cooktime", true);'>Cook Time</a> |
+			<a class="tag_type_name"  href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=origin", true);'>Cuisine Type</a> | 
+			<a class="tag_type_name" href='javascript:do_remote_call("browse_tags", "browseTags?&tagtype=course", true);'>Course, Dish or Other</a>  
+		</div>
+	  <p>
+		<div id = "browse_tags"></div>
+	</div>
+	
+	<script type="text/javascript">
+	
+		
+		function findBrowseTag(tag){
+			document.findrecipes.gbtags.value = tag;
+			document.findrecipes.submit();
+		}
+	</script>
+
+	
+		
+		<div class="about_gb">
+			Ever find yourself forgetting which cookbooks have which recipes?<p> 
+
+			GobbledyBook makes it easy to catalog your cookbooks so you can find what you want to cook!<p>
+
+			Learn more about gobbledyBook <a href="aboutUs">here</a>.<p>
+			
+			<img src="/images/site/book_h_color.png" align="right">
+		</div>
+	</a>
+
+	<div id="recent_items">
+		<p>
+		<div class="find_title">Recipes recently added in these cookbooks:</div>
+		
+			<div class="results_listing">
+			<%    @recentcookbooks.each do |listing| %>
+				 <a href="editCookbook?cookbookID=<%=listing.cookbook.id%>" title="<%=listing.cookbook.title%>"><img src="http://images.gobbledybook.com/<%=listing.cookbook.ISBN%>.jpg"></a>
+
+			<% end %>
+			<p><a href="cookbookshelf">See all the cookbooks with indexed recipes (<%=@recipecount%> recipes, and counting)...</a>
+			</div>
+	</div>
+
+</div>
+	<div id="find_cookbook_wrapper">
+		<div>
+			<div class="find_title">Start building your cookbook catalog!</div> 
+					Find one of your cookbooks and start adding recipes. You might find that someone has even beaten you to it! Don't forget to tag all those recipes that you want to come back to as you enter. 
+					
+					Our catalog contains <%=@cbcount%> cookbooks to choose from, so chances are, you'll find what you are looking for.<p> 
+				
+				
+					<% if session[:signedin] %>
+						To find a cookbook to browse or enter, just start by typing the interesting part of the title or part of the author's name. For example, <em>Naked Chef</em> for any of the books with Naked Chef in the title, and then pick from the drop down.<br>&nbsp;<br>
+					  
+						<div class="find_title">Find a Cookbook:</div><div><%= render :partial => "cookbookac"%></div>	&nbsp;<p>&nbsp;
+					
+			
+					<% end %>
+			
+		</div>
+
+	</div>
+
+</div>
+

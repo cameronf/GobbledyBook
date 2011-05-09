@@ -1,0 +1,28 @@
+
+<div class="edit_tags">
+	<div><form name="FindBookonAmazon" action="addCookbook">
+
+		<p><div id="add_by_name">
+			Cookbook Name:
+			<input type="text" id="cbtitle" name="cbtitle" value="" onFocus="this.select();">
+		</div>		
+	
+		<p>
+		<div id="add_by_isdn">
+			ISBN:
+			<input type="text" id="isbn" name="isbn" value="" onFocus="this.select();">		
+		</div>
+		<p><input type="submit">
+		</form>
+	</div>
+	
+	<div id="cookbookResults">
+		Just Added:<p>
+			<% if !@added_cbs.nil?%>
+			<% @added_cbs.each do |cookbook| %>
+			 	<div class="cookbook_title_listing"><a href="editCookbook?cookbookID=<%=cookbook[:id]%>"><%= cookbook[:title]%></a> by <%= cookbook[:author]%></div>
+			<% end %>
+			<% end %>
+	</div>
+		
+</div>

@@ -8,7 +8,7 @@ set :deploy_to, "/var/www/sites/gobbledybook.com"
 # If you aren't using Subversion to manage your source code, specify
 # your SCM below:
 set :scm, :git
-set :repository, "/srv/gitosis/repositories/gobbledybook.git"
+set :repository, "gitosis@67.207.128.103:gobbledybook.git"
 set :branch, "master"
 set :deploy_via, :remote_cache
  

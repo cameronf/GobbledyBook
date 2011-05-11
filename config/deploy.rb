@@ -15,6 +15,7 @@ set :scm, :git
 set :repository, "gitosis@67.207.128.103:gobbledybook.git"
 set :branch, "master"
 set :deploy_via, :remote_cache
+set :copy_exclude, ["*.sql", "*.mysql"]
  
 set :user, 'deploy'
 set :ssh_options, { :forward_agent => true }

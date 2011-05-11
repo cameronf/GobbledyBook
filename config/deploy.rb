@@ -34,14 +34,17 @@ namespace :deploy do
     desc "#{t} task is a no-op with mod_rails"
     task t, :roles => :app do ; end
   end
-
-  desc "copy over database.yml"
-  task :after_update_code do
-    run "cp #{deploy_to}/current/config/database.yml.example #{deploy_to}/current/config/database.yml"
-  end
-  
-  desc "run cleanup after each successful deploy"
-  task :after_default do
-    cleanup
-  end
 end
+
+desc "copy over database.yml"
+task :copy_database.yml do
+  run "cp #{deploy_to}/current/config/database.yml.example #{deploy_to}/current/config/database.yml"
+end
+  
+desc "run cleanup after each successful deploy"
+task :deploy_cleanup do
+  cleanup
+end
+
+after :update_code, :copy_database.yml
+after :default, :deploy_cleanup

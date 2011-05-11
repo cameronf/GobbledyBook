@@ -38,7 +38,7 @@ end
 
 desc "copy over database.yml"
 task :copy_database_yml do
-  run "cp #{deploy_to}/current/config/database.yml.example #{deploy_to}/current/config/database.yml"
+  run "cp #{current_path}/config/database.yml.example #{current_path}/config/database.yml"
 end
   
 desc "run cleanup after each successful deploy"

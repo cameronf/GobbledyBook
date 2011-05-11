@@ -1,3 +1,7 @@
+$:.unshift(File.expand_path('./lib', ENV['rvm_path']))
+require 'rvm/capistrano'
+require 'bundler/capistrano'
+
 set :application, "gobbledybook"
  
 # If you aren't deploying to /u/apps/#{application} on the target

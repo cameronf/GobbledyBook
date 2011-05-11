@@ -41,4 +41,4 @@ task :create_database_yml do
   run "cp #{deploy_to}/current/config/database.yml.example #{deploy_to}/current/config/database.yml"
 end
 
-after "deploy", "create_database_yml"
+after "deploy:update_code", "create_database_yml"

@@ -1,3 +1,5 @@
+  *Deploy: Try to fix database.yml copying [cam]
+
   *Deploy: Try to autorun bundler on deploy [cam]
 
   *General: What stopped working [cam]

@@ -36,7 +36,7 @@ test:
   socket: /var/run/mysqld/mysqld.sock
 
 production:
-  adapter: mysql
+  adapter: mysql2
   encoding: utf8
   database: gobbledybook_production
   pool: 5

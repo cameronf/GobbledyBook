@@ -12,7 +12,7 @@ set :deploy_to, "/var/www/sites/gobbledybook.com"
 # If you aren't using Subversion to manage your source code, specify
 # your SCM below:
 set :scm, :git
-set :repository, "gitosis@67.207.128.103:gobbledybook.git"
+set :repository, "gitosis@gobbledybook.com:gobbledybook.git"
 set :branch, "master"
 set :deploy_via, :remote_cache
 set :copy_exclude, ["*.sql", "*.mysql"]
@@ -20,9 +20,9 @@ set :copy_exclude, ["*.sql", "*.mysql"]
 set :user, 'deploy'
 set :ssh_options, { :forward_agent => true }
  
-role :app, "67.207.128.103"
-role :web, "67.207.128.103"
-role :db,  "67.207.128.103", :primary => true
+role :app, "gobbledybook.com"
+role :web, "gobbledybook.com"
+role :db,  "gobbledybook.com", :primary => true
  
 namespace :deploy do
   desc "Restarting mod_rails with restart.txt"

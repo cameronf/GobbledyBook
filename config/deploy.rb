@@ -42,10 +42,5 @@ task :copy_database_yml do
   run "cp #{release_path}/config/database.yml.example #{release_path}/config/database.yml"
 end
   
-desc "run cleanup after each successful deploy"
-task :deploy_cleanup do
-  cleanup
-end
-
 after "deploy:update_code", :copy_database_yml
-after :default, :deploy_cleanup
+after "deploy", "deploy:cleanup"

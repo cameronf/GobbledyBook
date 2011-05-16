@@ -125,6 +125,7 @@ ActiveRecord::Schema.define(:version => 20110130220649) do
     t.boolean "meta",       :default => false, :null => false
     t.boolean "origin",     :default => false, :null => false
     t.boolean "cooktime",   :default => false, :null => false
+    t.text    "altname"
   end
 
   add_index "tags", ["cooktime"], :name => "cooktime"
@@ -185,14 +186,5 @@ ActiveRecord::Schema.define(:version => 20110130220649) do
 
   add_index "users", ["fb_id"], :name => "fb_id"
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
-
-  create_table "usersCopy", :force => true do |t|
-    t.text    "nickname"
-    t.integer "banned",   :limit => 1, :default => 0
-    t.integer "fb_id",    :limit => 8
-    t.boolean "tutorial",              :default => false, :null => false
-  end
-
-  add_index "usersCopy", ["fb_id"], :name => "fb_id"
 
 end

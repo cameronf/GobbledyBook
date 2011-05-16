@@ -19,7 +19,7 @@ set :copy_exclude, ["*.sql", "*.mysql"]
 set :use_sudo, false
  
 set :user, 'deploy'
-set :ssh_options, { :forward_agent => true }
+#set :ssh_options, { :forward_agent => true }
  
 role :app, "gobbledybook.com"
 role :web, "gobbledybook.com"

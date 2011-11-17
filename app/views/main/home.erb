@@ -64,15 +64,10 @@
 					
 					Our catalog contains <%=@cbcount%> cookbooks to choose from, so chances are, you'll find what you are looking for.<p> 
 				
-				
-					<% if session[:signedin] %>
 						To find a cookbook to browse or enter, just start by typing the interesting part of the title or part of the author's name. For example, <em>Naked Chef</em> for any of the books with Naked Chef in the title, and then pick from the drop down.<br>&nbsp;<br>
 					  
 						<div class="find_title">Find a Cookbook:</div><div><%= render :partial => "cookbookac"%></div>	&nbsp;<p>&nbsp;
-					
-			
-					<% end %>
-			
+								
 		</div>
 
 	</div>

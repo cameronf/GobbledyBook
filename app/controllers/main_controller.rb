@@ -976,7 +976,7 @@ class MainController < ApplicationController
   end
 
  def isNewUser(userid)
-  newUser = true
+  newUser = false
   if userid.nil?
     # ignore if we don't have a logged in user. They can't edit anyway.
     newUser = false

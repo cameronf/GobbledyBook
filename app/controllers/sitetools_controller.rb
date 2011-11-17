@@ -109,7 +109,7 @@ class SitetoolsController < ApplicationController
                     # this downloads the image, and saves it in the public/images directory as ISBN.jpg
                     img = open(image_url)
                     #f = File.open('public/images/covers/'+item.get('isbn')+'.jpg','w')
-                    f = File.open('/var/www/bookimages/sites/'+item.get('isbn')+'.jpg','w')
+                    f = File.open('/var/www/sites/bookimages/'+item.get('isbn')+'.jpg','w')
                     f.write(img.read)
                     f.close                 
                   end

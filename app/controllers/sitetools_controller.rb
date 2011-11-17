@@ -4,7 +4,7 @@ class SitetoolsController < ApplicationController
   require 'amazon/ecs'
   require 'open-uri'
   
-  Amazon::Ecs.options = {:aWS_access_key_id => 'AKIAJDA6AQVK5KP7FTYQ', :aWS_secret_key => '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', :response_group => 'Medium'}
+  Amazon::Ecs.options = {:associate_tag => 'fullycomplete-20', :aWS_access_key_id => 'AKIAJDA6AQVK5KP7FTYQ', :aWS_secret_key => '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', :response_group => 'Medium', :operation => 'ItemLookup'}
  
     
   def index
@@ -23,13 +23,13 @@ class SitetoolsController < ApplicationController
         logger.debug(isbn)
 
       if title != ""
-        res = Amazon::Ecs.item_search(title, :response_group => 'Medium')
-        logger.debug("title lookup")
+        res = Amazon::Ecs.item_search(title, :response_group => 'Medium', :search_index => 'Books', :browse_node=> '6')
       else
         if isbn != ""
           logger.debug("isbn lookup")
-          res = Amazon::Ecs.item_lookup(isbn, :IdType =>'ASIN', :response_group => 'Medium' )
+          res = Amazon::Ecs.item_lookup(isbn, :IdType =>'ASIN', :response_group => 'Medium', :search_index => 'Books', :browse_node=> '6' )
           logger.debug(res.nil?)
+          logger.debug(res.is_valid_request?)
         end
       end
 
@@ -37,23 +37,26 @@ class SitetoolsController < ApplicationController
         
         #if it is a cookbook
         
-        bookbindings = ['Hardcover', 'Paperback','Board Book']
-        
-        @added_cbs = Array.new
+       @added_cbs = Array.new
         
         res.items.each do |item|
-          
-        
-           dd = item.get('itemattributes/DeweyDecimalNumber')
-
-          if !dd.nil?
+      
+          #logger.debug(item.get('asin'))
+          logger.debug(item.get('itemattributes\department'))
+     
+          # bnode = item.get('BrowseNodeId')
+      
+      
+      
+           
+          #if (!bnode.nil?)
             
-            if (dd.to_i > 640 && dd.to_i < 642) || (dd.to_i > 617 && dd.to_i < 619)
-    
-             bindingType = item.get('binding')
-            # check to make sure it's a book
-            if bookbindings.include?(bindingType)
+            #if (dd.to_i > 640 && dd.to_i < 642) || (dd.to_i > 617 && dd.to_i < 619)
+           # if (bnode == "6")
+              logger.debug(item.get('title'))
+              
               bookTitle = item.get('title')
+              
               authors = item.get_array('author')
               if authors.length == 0
                 author_name = "Not Available"
@@ -86,10 +89,7 @@ class SitetoolsController < ApplicationController
               if newBook.publicationdate.nil?
                 newBook.publicationdate = item.get('publicationdate') unless item.get('publicationdate').nil?
               end
-              if newBook.bookbinding.nil?
-                newBook.bookbinding = bindingType
-              end
-
+  
                if newBook.ISBN.nil?
                   newBook.ISBN = item.get('isbn') unless item.get('isbn').nil?
 
@@ -127,13 +127,10 @@ class SitetoolsController < ApplicationController
                 }
             
                 @added_cbs << cb_details
-            
-              # end if binding  
-              end
-        
+                    
           #end if a cookbook
-          end 
-        end
+         # end 
+       # end
           
         # end res loop  
         end

@@ -19,19 +19,24 @@ class SitetoolsController < ApplicationController
     
      title = params[:cbtitle]
       isbn = params[:isbn]
-    logger.debug(title)
+    logger.debug(title.nil?)
         logger.debug(isbn)
 
-      if title != ""
+      if !title.nil?
         res = Amazon::Ecs.item_search(title, :response_group => 'Medium', :search_index => 'Books', :browse_node=> '6')
+        logger.debug("title lookup")
+        logger.debug(title)
+        
       else
-        if isbn != ""
+        if !isbn.nil?
           logger.debug("isbn lookup")
           res = Amazon::Ecs.item_lookup(isbn, :IdType =>'ASIN', :response_group => 'Medium', :search_index => 'Books', :browse_node=> '6' )
           logger.debug(res.nil?)
           logger.debug(res.is_valid_request?)
         end
       end
+
+      logger.debug(res.nil?)
 
       if !res.nil?
         
@@ -42,7 +47,6 @@ class SitetoolsController < ApplicationController
         res.items.each do |item|
       
           #logger.debug(item.get('asin'))
-          logger.debug(item.get('itemattributes\department'))
      
           # bnode = item.get('BrowseNodeId')
       
@@ -105,7 +109,7 @@ class SitetoolsController < ApplicationController
                     # this downloads the image, and saves it in the public/images directory as ISBN.jpg
                     img = open(image_url)
                     #f = File.open('public/images/covers/'+item.get('isbn')+'.jpg','w')
-                    f = File.open('/home/public_html/bookimages/'+item.get('isbn')+'.jpg','w')
+                    f = File.new('/home/public_html/bookimages/'+item.get('isbn')+'.jpg','w')
                     f.write(img.read)
                     f.close                 
                   end

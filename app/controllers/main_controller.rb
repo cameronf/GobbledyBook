@@ -391,11 +391,7 @@ class MainController < ApplicationController
              
         end
       end  #timesince
-
-      if isNewUser(@userid) && params[:doneTutorial] != "1"
-          redirect_to :action => :newUser, "cookbookid" => @cookbook.id
-      else
-      
+     
         uc = Usercookbook.find_by_user_id_and_cookbook_id(@userid, @cookbook.id)
         if uc.nil?
           @setOwned = false
@@ -412,7 +408,6 @@ class MainController < ApplicationController
         respond_to do |format|
           format.html
         end
-      end #isNewUser && Params
     else
       title = params[:cookbook_title]
       redirect_to :action => :byCookbookName, "title" => title
@@ -976,7 +971,7 @@ class MainController < ApplicationController
   end
 
  def isNewUser(userid)
-  newUser = false
+  newUser = true
   if userid.nil?
     # ignore if we don't have a logged in user. They can't edit anyway.
     newUser = false

@@ -26,7 +26,7 @@ class SitetoolsController < ApplicationController
         res = Amazon::Ecs.item_search(title, :response_group => 'Medium', :search_index => 'Books', :browse_node=> '6')
         logger.debug("title lookup")
         logger.debug(title)
-        
+
       else
         if !isbn.nil?
           logger.debug("isbn lookup")
@@ -58,7 +58,9 @@ class SitetoolsController < ApplicationController
             #if (dd.to_i > 640 && dd.to_i < 642) || (dd.to_i > 617 && dd.to_i < 619)
            # if (bnode == "6")
               logger.debug(item.get('title'))
+              logger.debug('isbn')
               
+              logger.debug(item.get('isbn'))
               bookTitle = item.get('title')
               
               authors = item.get_array('author')
@@ -96,7 +98,8 @@ class SitetoolsController < ApplicationController
   
                if newBook.ISBN.nil?
                   newBook.ISBN = item.get('isbn') unless item.get('isbn').nil?
-
+                  logger.debug('ISBN')
+                  logger.debug(newBook.ISBN)
                   # books have up to 3 different images, this will get the largest image available.
                   # if you need width height, you can get that as well, but I couldn't decide if you did
                   # I would probably post process all of the images to make them all the same size...
@@ -105,11 +108,11 @@ class SitetoolsController < ApplicationController
                   image_url = item.get('mediumimage/url') unless item.get('mediumimage').nil?
                   #probably don't need the big one
                   # image_url = item.get('largeimage/url') unless item.get('largeimage').nil?
-                  if !image_url.nil?
+                  if !image_url.nil? && !newBook.ISBN.nil?
                     # this downloads the image, and saves it in the public/images directory as ISBN.jpg
                     img = open(image_url)
                     #f = File.open('public/images/covers/'+item.get('isbn')+'.jpg','w')
-                    f = File.open('/var/www/sites/bookimages/'+item.get('isbn')+'.jpg','wb')
+                    f = File.open('/var/www/sites/bookimages/'+newBook.ISBN+'.jpg','wb')
                     f.write(img.read)
                     f.close                 
                   end
